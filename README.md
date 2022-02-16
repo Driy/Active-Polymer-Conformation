@@ -1,2 +1,2 @@
 # Polymer-Conformation-Map
-This project implements analytic relationships between the conformation and the activity profile of polymers. It also considers distal Hookean interactions, as well as combinations between Hookean interactions and activity.
+This project is based on analytic relations between the correlation function of the excitations that drive an active polymer, and the conformation of this polymer. Using these relations, one can then transform back and forth between polymer conformation and excitation correlation matrix. In particular, for any given polymer configuration, characterized by the mean-squared separation $\Delta r^2$ one can extract an apparent exctitation correlation matrix $C$ that leads to such a conformation.
