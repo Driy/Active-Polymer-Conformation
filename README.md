@@ -1,4 +1,4 @@
-# Polymer-Conformation-Map
+# Active-Polymer-Conformation
 This project allows studying the conformation of active polymers that are driven by correlated random excitations.
 It is based on analytic formulae that relate 
 
