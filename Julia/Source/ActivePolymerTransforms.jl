@@ -9,30 +9,61 @@ export mean_square_separation
 export extract_correlations
 
 """
-Define Jacobian for a Rouse chain. Consider only line tension in Fourier space.
+J₀(q)
+
+Define Jacobian for a Rouse chain, where `q` is the wave mode. Consider only line tension in Fourier space.
+
+## Example
+```julia-repl
+julia> J₀(1.0)
+1.0
+```
 """
 function J₀(q)
     return q^2;
 end
 
 """
-Retrieve Fourier modes for Discrete Cosine Transform.
+get_frequency_dct(cartesian_index::CartesianIndex, matrix)
+
+Retrieve Fourier modes for Discrete Cosine Transform, where `cartesian_index::CartesianIndex` refers to the respective index of the `matrix`.
+
+## Example
+```julia-repl
+julia> get_frequency_dct(CartesianIndex(1,1), A)
+(0.0, 0.0)
+```
 """
-function get_frequency_dct(cartesian_index, matrix)
+function get_frequency_dct(cartesian_index::CartesianIndex, matrix)
     # this is checked to yield the correct wave modes!
     return π .* (cartesian_index.I .- 1) ./ size(matrix);
 end
 
 """
-Retrieve Fourier modes for Fast Fourier Transform.
+get_frequency_fft(cartesian_index::CartesianIndex, matrix)
+
+Retrieve Fourier modes for Fast Fourier Transform, where `cartesian_index::CartesianIndex` refers to the respective index of the `matrix`.
+
+## Example
+```julia-repl
+julia> get_frequency_fft(CartesianIndex(1,1), A)
+(0.0, 0.0)
+```
 """
-function get_frequency_fft(cartesian_index, matrix)
+function get_frequency_fft(cartesian_index::CartesianIndex, matrix)
     # this is checked to yield the correct wave modes!
     return 2π .* (0.5 .- abs.(0.5 .- (cartesian_index.I .- 1) ./ size(matrix) ));
 end
 
 """
-MACRO: Run in default mode.
+@default
+
+MACRO: Run in default mode. Prepend this to a command.
+
+## Example
+```julia-repl
+julia> ΔR = @default mean_square_separation(C);
+```
 """
 macro default(command)
     quote
@@ -41,7 +72,14 @@ macro default(command)
 end
 
 """
-MACRO: Run in DCT mode.
+@dct
+
+MACRO: Run in DCT mode. Prepend this to a command.
+
+## Example
+```julia-repl
+julia> ΔR = @dct mean_square_separation(C);
+```
 """
 macro dct(command)
     quote
@@ -53,7 +91,14 @@ macro dct(command)
 end
 
 """
-MACRO: Run in FFT mode.
+@fft
+
+MACRO: Run in FFT mode. Prepend this to a command.
+
+## Example
+```julia-repl
+julia> ΔR = @fft mean_square_separation(C);
+```
 """
 macro fft(command)
     quote
@@ -65,7 +110,14 @@ macro fft(command)
 end
 
 """
-Map the noise correlation matrix C to a correlation matrix between different Rouse modes at the same time, for a polymer with Jacobian J.
+fourier_C_to_R!(tmp, n, J::Function, get_frequency::Function)
+
+Map the noise correlation matrix `tmp` in Fourier space to a correlation matrix between different Rouse modes at the same time, for a polymer with Jacobian `J::Function`. Takes the method `get_frequency::Function` to correctly determine the mode numbers of the Fourier modes
+
+## Example
+```julia-repl
+julia> fourier_C_to_R!(C, 0, J₀, get_frequency_dct);
+```
 """
 function fourier_C_to_R!(tmp, J::Function, get_frequency::Function)
     for id in CartesianIndices(tmp)
@@ -80,7 +132,14 @@ function fourier_C_to_R!(tmp, J::Function, get_frequency::Function)
 end
 
 """
-Calculate mean square separation matrix from correlation matrix between different Rouse modes.
+real_R_to_ΔR(tmp)
+
+Calculate mean square separation matrix from correlation matrix `tmp` between different Rouse modes.
+
+## Example
+```julia-repl
+julia> ΔR = real_R_to_ΔR(R);
+```
 """
 function real_R_to_ΔR(tmp)
     return [
@@ -108,7 +167,9 @@ function mean_square_separation(
 end
 
 """
-Map the mean square separation in Fourier space to a corresponding noise correlation matrix C.
+fourier_ΔR_to_C!(tmp, J::Function, get_frequency::Function)
+
+Map the mean square separation in Fourier space `tmp` to `return` a corresponding noise correlation matrix C.
 """
 function fourier_ΔR_to_C!(tmp, J::Function, get_frequency::Function)
     for id in CartesianIndices(tmp)
@@ -124,7 +185,7 @@ function fourier_ΔR_to_C!(tmp, J::Function, get_frequency::Function)
 end
 
 """
-Extract correlation function from mean square separation, for a polymer with Jacobian J.
+Extract correlation function from mean square separation `ΔR`, for a polymer with Jacobian `J::Function`.
 """
 function extract_correlations(
         ΔR, J::Function = J₀)
@@ -140,6 +201,8 @@ function extract_correlations(
 end
 
 """
+test_extraction(C)
+
 Test the extraction of the correlation function for a given correlation function.
 Note that we cannot extract information about homogeneous contributions!
 Thus, this ONLY works perfectly if there are no homogeneous contributions.
