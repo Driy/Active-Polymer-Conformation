@@ -2,14 +2,13 @@ module CorrelationMatrices
 
 using FFTW
 
-export random_correlation_matrix
-export random_correlation_matrix_special
+export random
 
 """
 Generate random correlation matrix of size `matrix_size`. 
 If `remove_homogeneous` is true, then remove homogeneous contributions.
 """
-function random_correlation_matrix(matrix_size, remove_homogeneous=false)
+function random(matrix_size; remove_homogeneous=false)
     # first we define the corresponding random matrix Λ
     tmp = rand(matrix_size, matrix_size) .- 0.5;
     

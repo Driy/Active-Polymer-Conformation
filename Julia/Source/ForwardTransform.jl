@@ -6,7 +6,7 @@ using ..StandardFunctions
 export mean_square_separation
 
 """
-fourier_C_to_R!(fourier_type, matrix::AbstractMatrix, J::Function)
+fourier_C_to_R!(matrix::AbstractMatrix; J::Function, fourier_type)
 
 Map the noise correlation matrix `tmp` in Fourier space to a correlation matrix between different Rouse modes at the same time, for a polymer with Jacobian `J::Function`. Specify `fourier_type` to switch between different fourier transforms such as DCT or FFT.
 
@@ -48,7 +48,7 @@ function real_R_to_ΔR(matrix::AbstractMatrix)
 end
 
 """
-mean_square_separation(fourier_type, matrix::AbstractMatrix, J::Function = StandardFunctions.J₀)
+mean_square_separation(matrix::AbstractMatrix; J::Function = StandardFunctions.J₀, fourier_type = FourierTransform.DCT)
 
 Calculate the mean square separation of a polymer with given correlation matrix C and Jacobian J.
 Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
