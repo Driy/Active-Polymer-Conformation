@@ -1,8 +1,8 @@
 module TestForwardTransform
 
 include("../Source/ActivePolymer.jl")
+include("../Source/CorrelationMatrices.jl")
 
-using Test
 using Statistics
 using LinearAlgebra
 
@@ -12,7 +12,7 @@ test()
 Check if discrete computation yields the same result as the analytic prediction for a constant activity. Keyword arguments: `N` specifies the size of the matrix, `tol` the tolerance of the test.
 """
 function test_homogeneous(; N=512, tol=1e-2)
-    C_diagonal  = Diagonal(fill(1.0,N));
+    C_diagonal  = CorrelationMatrices.diagonal_generic(N, profile=(s->1.0));
     ΔR_numeric  = ActivePolymer.ForwardTransform.mean_square_separation(C_diagonal);
     ΔR_analytic = [analytic(s₁, s₂) for s₁=0:N-1, s₂=0:N-1];
 
@@ -25,7 +25,7 @@ test(ϵ, α)
 Check if discrete computation yields the same result as the analytic prediction for a constant activity that is superimposed by sinusoidal modulations `ϵ cos(α s)`. Keyword arguments: `N` specifies the size of the matrix, `tol` the tolerance of the test.
 """
 function test_cosine_1(ϵ, α; N=512, tol=1e-2)
-    C_diagonal  = Diagonal([1.0 + ϵ*cos(α*s) for s=0:N-1]);
+    C_diagonal  = CorrelationMatrices.diagonal_generic(N, profile=(s->1.0 + ϵ*cos(α*s)));
     ΔR_numeric  = ActivePolymer.ForwardTransform.mean_square_separation(C_diagonal);
     ΔR_analytic = [analytic(ϵ, α, s₁, s₂) for s₁=0:N-1, s₂=0:N-1];
 
@@ -36,7 +36,7 @@ end
 Check if discrete computation yields the same result as the analytic prediction for a constant activity that is superimposed by sinusoidal modulations `ϵ cos(α s)`. Keyword arguments: `N` specifies the size of the matrix, `dN` the width of the boundary padding that is to be discarded, `tol` the tolerance of the test.
 """
 function test_cosine_2(ϵ, α; N=512, dN=64, tol=1e-2)
-    C_diagonal  = Diagonal([ϵ*cos(α*s) for s=0:N-1]);
+    C_diagonal  = CorrelationMatrices.diagonal_generic(N, profile=(s->ϵ*cos(α*s)));
     ΔR_numeric  = ActivePolymer.ForwardTransform.mean_square_separation(C_diagonal);
     ΔR_analytic = [analytic(ϵ, α, s₁, s₂) - analytic(s₁, s₂) for s₁=0:N-1, s₂=0:N-1];
 
