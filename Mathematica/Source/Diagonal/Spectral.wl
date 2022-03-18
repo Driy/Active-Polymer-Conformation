@@ -60,7 +60,7 @@ Needs["FourierSeries`"]; ParallelNeeds["FourierSeries`"];
 Options[PositionCorrelationNum]={\[Lambda]->0,\[Kappa]->0,"ActivitySpectrum"->None};
 PositionCorrelationNum[x_,y_,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]],ActFun=OptionValue["ActivitySpectrum"]},
 Re@Which[
-	ActFun===None, Spectral`Private`Kernel`PositionCorrelationActivity[Abs[x-y],0,\[Lambda]->OptionValue[\[Lambda]],\[Kappa]->OptionValue[\[Kappa]]],
+	ActFun===None, Spectral`Private`Kernel`PositionCorrelationActivity[Abs[x-y],0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val],
 	True, NInverseFourierTransform[
 		Spectral`Private`Kernel`PositionCorrelationActivity[Abs[x-y],k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]ActFun[k],
 		k,(x+y)/2,
@@ -78,7 +78,7 @@ SquaredSeparationNum[x_,y_,opts:OptionsPattern[]] := With[{fun=Spectral`Position
 Options[TangentCorrelationNum]={\[Lambda]->0,\[Kappa]->0,"ActivitySpectrum"->None};
 TangentCorrelationNum[x_,y_,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]],ActFun=OptionValue["ActivitySpectrum"]},
 Re@Which[
-	ActFun===None, Spectral`Private`Kernel`TangentCorrelationActivity[Abs[x-y],0,\[Lambda]->OptionValue[\[Lambda]],\[Kappa]->OptionValue[\[Kappa]]],
+	ActFun===None, Spectral`Private`Kernel`TangentCorrelationActivity[Abs[x-y],0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val],
 	True, NInverseFourierTransform[
 		Spectral`Private`Kernel`TangentCorrelationActivity[Abs[x-y],k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]ActFun[k],
 		k,(x+y)/2,

@@ -2,6 +2,8 @@
 
 (* ::Text:: *)
 (*Define Spectral kernels for a Rouse polymer, which are obtained by analytic calculations. We here define the kernels in generic unevaluated form. This form is not useful per se when evaluated, but it will be reused and specialized in many contexts.*)
+(**)
+(*Note that we here assume that all parameters, including the magnitude of the separation in sequence space \[CapitalDelta]s, are positive. In this way, we exclude any \[Delta]-Distribution contributions and their derivatives.*)
 
 
 BeginPackage["Kernel`"]
@@ -18,8 +20,9 @@ J[q_,OptionsPattern[]] := OptionValue[\[Lambda]] + q^2 + OptionValue[\[Kappa]] q
 
 
 (* This Fourier Transform is fine. *)
-CorrelationActivity[\[CapitalDelta]s_,k_,n_Integer:0,opts:OptionsPattern[]] := Module[{tmp,vars,assumptions},
-	vars=Join[{k,\[CapitalDelta]s},Values@List@opts];
+CorrelationActivity[\[CapitalDelta]s_,k_:0,n_Integer:0,opts:OptionsPattern[]] := Module[{tmp,vars,assumptions},
+	vars=Join[{\[CapitalDelta]s, k},Values@List@opts];
+	vars=Select[vars,Head[#]==Symbol&];
 	assumptions=Join[Map[#\[Element]Reals&,vars],Map[#>0&,vars]];
 	tmp=InverseFourierTransform[
 		(q^2-(k/2)^2)^n/(J[q+k/2,opts]+J[q-k/2,opts]), 
@@ -32,8 +35,9 @@ CorrelationActivity[\[CapitalDelta]s_,k_,n_Integer:0,opts:OptionsPattern[]] := M
 
 
 (* Mathematica can only carry out this Fourier Transform in for special (\[Lambda],\[Kappa])... *)
-CorrelationTension[\[CapitalDelta]s_,k_,n_Integer:0,opts:OptionsPattern[]] := Module[{tmp,vars,assumptions},
-	vars=Join[{k,\[CapitalDelta]s},Values@List@opts];
+CorrelationTension[\[CapitalDelta]s_,k_:0,n_Integer:0,opts:OptionsPattern[]] := Module[{tmp,vars,assumptions},
+	vars=Join[{\[CapitalDelta]s, k},Values@List@opts];
+	vars=Select[vars,Head[#]==Symbol&];
 	assumptions=Join[Map[#\[Element]Reals&,vars],Map[#>0&,vars]];
 	tmp=InverseFourierTransform[
 		(q^2-(k/2)^2)^(n+1)/(J[q+k/2,opts]J[q-k/2,opts]), 
