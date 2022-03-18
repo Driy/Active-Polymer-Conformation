@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["Spectral`"]
+BeginPackage["NumericSpectral`"]
 
 PositionCorrelationNum::usage = "PositionCorrelationNum[x,y] determines the correlation function between the positions of two points x and y.";
 SquaredSeparationNum::usage = "SquaredSeparationNum[x,y] determines the squared separation between the positions of two points x and y.";
@@ -10,40 +10,10 @@ Begin["`Private`"]
 
 
 (* ::Text:: *)
-(*Now we specialize the kernels to make them useful for further calculations. The tension kernel does not yield useful results for generic (\[Lambda],\[Kappa]), so we neglect it.*)
+(*Import specialized kernels.*)
 
 
-Begin["`Kernel`"]
-
-(* Import generic kernels that we will here specialize. *)
-Import["Kernel.wl"]
-
-(* Specialize to n == 0. *)
-Options[PositionCorrelationActivity]={\[Lambda]->0,\[Kappa]->0};
-(PositionCorrelationActivity[\[CapitalDelta]s_,k_,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]]}, 
-N[Which[
-	\[Kappa]val===0 && \[Lambda]val===0, #1,
-	\[Kappa]val===0, #2,
-	True, #3
-],$MachinePrecision]])&@@{
-	Kernel`CorrelationActivity[\[CapitalDelta]s,k,0],
-	Kernel`CorrelationActivity[\[CapitalDelta]s,k,0,\[Lambda]->\[Lambda]val],
-	Kernel`CorrelationActivity[\[CapitalDelta]s,k,0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]
-};
-
-(* Specialize to n == 1. *)
-Options[TangentCorrelationActivity]={\[Lambda]->0,\[Kappa]->0};
-(TangentCorrelationActivity[\[CapitalDelta]s_,k_,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]]}, 
-N[Which[
-	\[Kappa]val===0 && \[Lambda]val===0, #1,
-	\[Kappa]val===0, #2,
-	True, Throw["The case (\[Lambda]!=0, \[Kappa]!=0) is not defined."]
-],$MachinePrecision]])&@@{
-	Kernel`CorrelationActivity[\[CapitalDelta]s,k,1],
-	Kernel`CorrelationActivity[\[CapitalDelta]s,k,1,\[Lambda]->\[Lambda]val]
-};
-
-End[]
+Needs["KernelActivity`"->"K`","KernelActivity.wl"];
 
 
 (* ::Text:: *)
@@ -60,9 +30,9 @@ Needs["FourierSeries`"]; ParallelNeeds["FourierSeries`"];
 Options[PositionCorrelationNum]={\[Lambda]->0,\[Kappa]->0,"ActivitySpectrum"->None};
 PositionCorrelationNum[x_,y_,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]],ActFun=OptionValue["ActivitySpectrum"]},
 Re@Which[
-	ActFun===None, Spectral`Private`Kernel`PositionCorrelationActivity[Abs[x-y],0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val],
+	ActFun===None, K`PositionCorrelationActivity[Abs[x-y],0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val],
 	True, NInverseFourierTransform[
-		Spectral`Private`Kernel`PositionCorrelationActivity[Abs[x-y],k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]ActFun[k],
+		K`PositionCorrelationActivity[Abs[x-y],k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]ActFun[k],
 		k,(x+y)/2,
 		FourierParameters->{1,-1},
 		Method->"AdaptiveMonteCarlo",
@@ -71,16 +41,16 @@ Re@Which[
 ]];
 
 Options[SquaredSeparationNum]={\[Lambda]->0,\[Kappa]->0,"ActivitySpectrum"->None};
-SquaredSeparationNum[x_,y_,opts:OptionsPattern[]] := With[{fun=Spectral`PositionCorrelationNum},
+SquaredSeparationNum[x_,y_,opts:OptionsPattern[]] := With[{fun=NumericSpectral`PositionCorrelationNum},
 	fun[x,x,opts]+fun[y,y,opts]-2fun[x,y,opts]
 ];
 
 Options[TangentCorrelationNum]={\[Lambda]->0,\[Kappa]->0,"ActivitySpectrum"->None};
 TangentCorrelationNum[x_,y_,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]],ActFun=OptionValue["ActivitySpectrum"]},
 Re@Which[
-	ActFun===None, Spectral`Private`Kernel`TangentCorrelationActivity[Abs[x-y],0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val],
+	ActFun===None, K`TangentCorrelationActivity[Abs[x-y],0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val],
 	True, NInverseFourierTransform[
-		Spectral`Private`Kernel`TangentCorrelationActivity[Abs[x-y],k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]ActFun[k],
+		K`TangentCorrelationActivity[Abs[x-y],k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]ActFun[k],
 		k,(x+y)/2,
 		FourierParameters->{1,-1},
 		Method->"AdaptiveMonteCarlo",

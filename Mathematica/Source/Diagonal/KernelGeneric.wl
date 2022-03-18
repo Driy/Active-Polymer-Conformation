@@ -6,7 +6,7 @@
 (*Note that we here assume that all parameters, including the magnitude of the separation in sequence space \[CapitalDelta]s, are positive. In this way, we exclude any \[Delta]-Distribution contributions and their derivatives.*)
 
 
-BeginPackage["Kernel`"]
+BeginPackage["KernelGeneric`"]
 
 CorrelationActivity::usage = "CorrelationActivity[\[CapitalDelta]s_,k_,n] gives the spectral kernel of order n and frequency k in response to activity modulations."
 CorrelationTension::usage = "CorrelationTension[\[CapitalDelta]s_,k_,n] gives the spectral kernel of order n and frequency k in response to tension modulations."
@@ -14,7 +14,7 @@ CorrelationTension::usage = "CorrelationTension[\[CapitalDelta]s_,k_,n] gives th
 Begin["`Private`"]
 
 
-(* Define constructors *)
+(* Define Jacobian *)
 Options[J]={\[Lambda]->0,\[Kappa]->0};
 J[q_,OptionsPattern[]] := OptionValue[\[Lambda]] + q^2 + OptionValue[\[Kappa]] q^4;
 
