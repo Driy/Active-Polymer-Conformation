@@ -21,43 +21,70 @@ Needs["KernelGeneric`"->"K`","KernelGeneric.wl"];
 
 
 (* Specialize to n == 0. *)
-Options[PositionCorrelationActivity]={\[Lambda]->0,\[Kappa]->0};
-(PositionCorrelationActivity[\[CapitalDelta]s_,k_,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]]}, 
-N[Which[
-	\[Kappa]val===0 && \[Lambda]val===0, #1,
-	\[Kappa]val===0, #2,
-	True, #3
-],$MachinePrecision]])&@@{
-	K`CorrelationActivity[\[CapitalDelta]s,k,0],
-	K`CorrelationActivity[\[CapitalDelta]s,k,0,\[Lambda]->\[Lambda]val],
-	K`CorrelationActivity[\[CapitalDelta]s,k,0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]
-};
+Block[{case, n=0},
+case[1] = K`CorrelationActivity[\[CapitalDelta]s,0,n];
+case[2] = K`CorrelationActivity[\[CapitalDelta]s,k,n];
+case[3] = K`CorrelationActivity[\[CapitalDelta]s,0,n,\[Lambda]->\[Lambda]val];
+case[4] = K`CorrelationActivity[\[CapitalDelta]s,k,n,\[Lambda]->\[Lambda]val];
+case[5] = K`CorrelationActivity[\[CapitalDelta]s,0,n,\[Kappa]->\[Kappa]val];
+case[6] = K`CorrelationActivity[\[CapitalDelta]s,k,n,\[Kappa]->\[Kappa]val];
+case[7] = K`CorrelationActivity[\[CapitalDelta]s,0,n,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val];
+case[8] = K`CorrelationActivity[\[CapitalDelta]s,k,n,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val];
+
+Options[PositionCorrelationActivity]={\[Lambda]->0,\[Kappa]->0}; (
+PositionCorrelationActivity[\[CapitalDelta]s_,k_:0,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]]}, 
+Which[
+	\[Kappa]val===0 && \[Lambda]val===0 && k===0, #1,
+	\[Kappa]val===0 && \[Lambda]val===0 && k=!=0, #2,
+	\[Kappa]val===0 && \[Lambda]val=!=0 && k===0, #3,
+	\[Kappa]val===0 && \[Lambda]val=!=0 && k=!=0, #4,
+	\[Kappa]val=!=0 && \[Lambda]val===0 && k===0, #5,
+	\[Kappa]val=!=0 && \[Lambda]val===0 && k=!=0, #6,
+	\[Kappa]val=!=0 && \[Lambda]val=!=0 && k===0, #7,
+	\[Kappa]val=!=0 && \[Lambda]val=!=0 && k=!=0, #8
+]];
+)&@@Table[case[i],{i,8}];
+];
 
 
 (* Specialize to n == 1. *)
-Options[TangentCorrelationActivity]={\[Lambda]->0,\[Kappa]->0};
-(TangentCorrelationActivity[\[CapitalDelta]s_,k_,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]]}, 
-N[Which[
-	\[Kappa]val===0 && \[Lambda]val===0, #1,
-	\[Kappa]val===0, #2,
-	True, Throw["The case (\[Lambda]!=0, \[Kappa]!=0) is not defined."]
-],$MachinePrecision]])&@@{
-	K`CorrelationActivity[\[CapitalDelta]s,k,1],
-	K`CorrelationActivity[\[CapitalDelta]s,k,1,\[Lambda]->\[Lambda]val]
-};
+Block[{case, n=1},
+case[1] = K`CorrelationActivity[\[CapitalDelta]s,0,n];
+case[2] = K`CorrelationActivity[\[CapitalDelta]s,k,n];
+case[3] = K`CorrelationActivity[\[CapitalDelta]s,0,n,\[Lambda]->\[Lambda]val];
+case[4] = K`CorrelationActivity[\[CapitalDelta]s,k,n,\[Lambda]->\[Lambda]val];
+
+Options[TangentCorrelationActivity]={\[Lambda]->0,\[Kappa]->0}; (
+TangentCorrelationActivity[\[CapitalDelta]s_,k_:0,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]]}, 
+Which[
+	\[Kappa]val===0 && \[Lambda]val===0 && k===0, #1,
+	\[Kappa]val===0 && \[Lambda]val===0 && k=!=0, #2,
+	\[Kappa]val===0 && \[Lambda]val=!=0 && k===0, #3,
+	\[Kappa]val===0 && \[Lambda]val=!=0 && k=!=0, #4,
+	\[Kappa]val=!=0, Throw["The case \[Kappa]!=0 is not defined."]
+]];
+)&@@Table[case[i],{i,4}];
+];
 
 
 (* Specialize to n == 2. *)
-Options[CurvatureCorrelationActivity]={\[Lambda]->0,\[Kappa]->0};
-(CurvatureCorrelationActivity[\[CapitalDelta]s_,k_,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]]}, 
-N[Which[
-	\[Kappa]val===0 && \[Lambda]val===0, #1,
-	\[Kappa]val===0, #2,
-	True, Throw["The case (\[Lambda]!=0, \[Kappa]!=0) is not defined."]
-],$MachinePrecision]])&@@{
-	K`CorrelationActivity[\[CapitalDelta]s,k,2],
-	K`CorrelationActivity[\[CapitalDelta]s,k,2,\[Lambda]->\[Lambda]val]
-};
+Block[{case, n=2},
+case[1] = K`CorrelationActivity[\[CapitalDelta]s,0,n];
+case[2] = K`CorrelationActivity[\[CapitalDelta]s,k,n];
+case[3] = K`CorrelationActivity[\[CapitalDelta]s,0,n,\[Lambda]->\[Lambda]val];
+case[4] = K`CorrelationActivity[\[CapitalDelta]s,k,n,\[Lambda]->\[Lambda]val];
+	
+Options[CurvatureCorrelationActivity]={\[Lambda]->0,\[Kappa]->0}; (
+CurvatureCorrelationActivity[\[CapitalDelta]s_,k_:0,OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]]}, 
+Which[
+	\[Kappa]val===0 && \[Lambda]val===0 && k===0, #1,
+	\[Kappa]val===0 && \[Lambda]val===0 && k=!=0, #2,
+	\[Kappa]val===0 && \[Lambda]val=!=0 && k===0, #3,
+	\[Kappa]val===0 && \[Lambda]val=!=0 && k=!=0, #4,
+	\[Kappa]val=!=0, Throw["The case \[Kappa]!=0 is not defined."]
+]];
+)&@@Table[case[i],{i,4}];
+];
 
 
 End[]
