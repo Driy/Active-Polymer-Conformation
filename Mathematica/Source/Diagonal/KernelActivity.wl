@@ -27,8 +27,8 @@ cachedir=NotebookDirectory[]<>"Cache";
 If[!FileExistsQ[cachedir],CreateDirectory[cachedir]];
 
 
-compile[expr_]:=Compile[{{\[CapitalDelta]s,_Real},{k,_Integer},{lambda,_Real},{kappa,_Real}}, 
-	expr, CompilationTarget->"C", RuntimeOptions->"Speed"];
+compile[expr_]:=Compile[{{\[CapitalDelta]s,_Real},{k,_Real},{lambda,_Real},{kappa,_Real}}, 
+	expr, CompilationTarget->"C", RuntimeOptions->{"Speed","EvaluateSymbolically" -> False}];
 
 
 (* Specialize to n == 0. *)
@@ -62,7 +62,7 @@ Which[
 )&@@Table[case[i],{i,8}];
 
 Options[PositionCorrelationActivityC]={\[Lambda]->0,\[Kappa]->0}; (
-PositionCorrelationActivityC[\[CapitalDelta]s_,k_:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
+PositionCorrelationActivityC[\[CapitalDelta]s:_?NumericQ,k:_?NumericQ:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
 Which[
 	kappa===0 && lambda===0 && k===0, #1[\[CapitalDelta]s,k,lambda,kappa],
 	kappa===0 && lambda===0 && k=!=0, #2[\[CapitalDelta]s,k,lambda,kappa],
@@ -101,7 +101,7 @@ Which[
 )&@@Table[case[i],{i,4}];
 
 Options[TangentCorrelationActivityC]={\[Lambda]->0,\[Kappa]->0}; (
-TangentCorrelationActivityC[\[CapitalDelta]s_,k_:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
+TangentCorrelationActivityC[\[CapitalDelta]s:_?NumericQ,k:_?NumericQ:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
 Which[
 	kappa===0 && lambda===0 && k===0, #1[\[CapitalDelta]s,k,lambda,kappa],
 	kappa===0 && lambda===0 && k=!=0, #2[\[CapitalDelta]s,k,lambda,kappa],
@@ -137,7 +137,7 @@ Which[
 )&@@Table[case[i],{i,4}];
 
 Options[CurvatureCorrelationActivityC]={\[Lambda]->0,\[Kappa]->0}; (
-CurvatureCorrelationActivityC[\[CapitalDelta]s_,k_:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
+CurvatureCorrelationActivityC[\[CapitalDelta]s:_?NumericQ,k:_?NumericQ:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
 Which[
 	kappa===0 && lambda===0 && k===0, #1[\[CapitalDelta]s,k,lambda,kappa],
 	kappa===0 && lambda===0 && k=!=0, #2[\[CapitalDelta]s,k,lambda,kappa],

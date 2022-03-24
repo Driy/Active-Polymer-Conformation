@@ -27,8 +27,8 @@ cachedir=NotebookDirectory[]<>"Cache";
 If[!FileExistsQ[cachedir],CreateDirectory[cachedir]];
 
 
-compile[expr_]:=Compile[{{\[CapitalDelta]s,_Real},{k,_Integer},{lambda,_Real},{kappa,_Real}}, 
-	expr, CompilationTarget->"C", RuntimeOptions->"Speed"];
+compile[expr_]:=Compile[{{\[CapitalDelta]s,_Real},{k,_Real},{lambda,_Real},{kappa,_Real}}, 
+	expr, CompilationTarget->"C", RuntimeOptions->{"Speed","EvaluateSymbolically" -> False}];
 
 
 (* Specialize to n == 0. *)
@@ -59,7 +59,7 @@ Which[
 )&@@Table[case[i],{i,6}];
 
 Options[PositionCorrelationTensionC]={\[Lambda]->0,\[Kappa]->0}; (
-PositionCorrelationTensionC[\[CapitalDelta]s_,k_:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
+PositionCorrelationTensionC[\[CapitalDelta]s:_?NumericQ,k:_?NumericQ:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
 Which[
 	kappa===0 && lambda===0 && k===0, #1[\[CapitalDelta]s,k,lambda,kappa],
 	kappa===0 && lambda===0 && k=!=0, #2[\[CapitalDelta]s,k,lambda,kappa],
@@ -97,7 +97,7 @@ Which[
 )&@@Table[case[i],{i,4}];
 
 Options[TangentCorrelationTensionC]={\[Lambda]->0,\[Kappa]->0}; (
-TangentCorrelationTensionC[\[CapitalDelta]s_,k_:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
+TangentCorrelationTensionC[\[CapitalDelta]s:_?NumericQ,k:_?NumericQ:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
 Which[
 	kappa===0 && lambda===0 && k===0, #1[\[CapitalDelta]s,k,lambda,kappa],
 	kappa===0 && lambda===0 && k=!=0, #2[\[CapitalDelta]s,k,lambda,kappa],
@@ -133,7 +133,7 @@ Which[
 )&@@Table[case[i],{i,4}];
 
 Options[CurvatureCorrelationTensionC]={\[Lambda]->0,\[Kappa]->0}; (
-CurvatureCorrelationTensionC[\[CapitalDelta]s_,k_:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
+CurvatureCorrelationTensionC[\[CapitalDelta]s:_?NumericQ,k:_?NumericQ:0,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]]}, 
 Which[
 	kappa===0 && lambda===0 && k===0, #1[\[CapitalDelta]s,k,lambda,kappa],
 	kappa===0 && lambda===0 && k=!=0, #2[\[CapitalDelta]s,k,lambda,kappa],

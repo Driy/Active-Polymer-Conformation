@@ -30,9 +30,9 @@ Needs["FourierSeries`"]; ParallelNeeds["FourierSeries`"];
 Options[PositionCorrelationNum]={\[Lambda]->0,\[Kappa]->0,"ActivitySpectrum"->None};
 PositionCorrelationNum[x_,y_,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]],ActFun=OptionValue["ActivitySpectrum"]},
 Re@Which[
-	ActFun===None, N[K`PositionCorrelationActivity[Abs[x-y],0,\[Lambda]->lambda,\[Kappa]->kappa],$MachinePrecision],
+	ActFun===None, N[K`PositionCorrelationActivity[Abs[x-y],0,\[Lambda]->lambda,\[Kappa]->kappa], $MachinePrecision],
 	True, NInverseFourierTransform[
-		N[K`PositionCorrelationActivity[Abs[x-y],k,\[Lambda]->lambda,\[Kappa]->kappa]ActFun[k],$MachinePrecision],
+		N[K`PositionCorrelationActivity[Abs[x-y],k,\[Lambda]->lambda,\[Kappa]->kappa]ActFun[k], $MachinePrecision],
 		k,(x+y)/2,
 		FourierParameters->{1,-1},
 		Method->"AdaptiveMonteCarlo",
@@ -48,9 +48,9 @@ SquaredSeparationNum[x_,y_,opts:OptionsPattern[]] := With[{fun=NumericSpectral`P
 Options[TangentCorrelationNum]={\[Lambda]->0,\[Kappa]->0,"ActivitySpectrum"->None};
 TangentCorrelationNum[x_,y_,OptionsPattern[]] := With[{lambda=OptionValue[\[Lambda]],kappa=OptionValue[\[Kappa]],ActFun=OptionValue["ActivitySpectrum"]},
 Re@Which[
-	ActFun===None, N[K`TangentCorrelationActivity[Abs[x-y],0,\[Lambda]->lambda,\[Kappa]->kappa],$MachinePrecision],
+	ActFun===None, N[K`TangentCorrelationActivity[Abs[x-y],0,\[Lambda]->lambda,\[Kappa]->kappa], $MachinePrecision],
 	True, NInverseFourierTransform[
-		N[K`TangentCorrelationActivity[Abs[x-y],k,\[Lambda]->lambda,\[Kappa]->kappa]ActFun[k],$MachinePrecision],
+		N[K`TangentCorrelationActivity[Abs[x-y],k,\[Lambda]->lambda,\[Kappa]->kappa]ActFun[k], $MachinePrecision],
 		k,(x+y)/2,
 		FourierParameters->{1,-1},
 		Method->"AdaptiveMonteCarlo",
@@ -68,7 +68,7 @@ Off[Infinity::indet]; ParallelEvaluate[Off[Infinity::indet]];
 Off[Power::infy]; ParallelEvaluate[Off[Power::infy]];
 
 
-DistributeDefinitions["Spectral`"]
+DistributeDefinitions["NumericSpectral`"]
 
 
 End[]
