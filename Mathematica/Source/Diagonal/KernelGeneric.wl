@@ -34,6 +34,20 @@ CorrelationActivity[\[CapitalDelta]s_,k_:0,n_Integer:0,opts:OptionsPattern[]] :=
 ];
 
 
+StiffnessActivity[\[CapitalDelta]s_,k_:1,opts:OptionsPattern[]] := Module[{tmp,vars,assumptions},
+	vars=Join[{\[CapitalDelta]s, k},Values@List@opts];
+	vars=Select[vars,Head[#]==Symbol&];
+	assumptions=Join[Map[#\[Element]Reals&,vars],Map[#>0&,vars]];
+	tmp=InverseFourierTransform[
+		(J[q+k/2,opts]J[q-k/2,opts])/(J[q+k/2,opts]+J[q-k/2,opts]), 
+		q, \[CapitalDelta]s,
+		FourierParameters->{1,-1},
+		Assumptions->assumptions];
+	tmp=FullSimplify[tmp,Assumptions->assumptions]/.k->Abs[k];
+	Return[tmp];
+];
+
+
 (* Mathematica can only carry out this Fourier Transform in for special (\[Lambda],\[Kappa])... *)
 CorrelationTension[\[CapitalDelta]s_,k_:0,n_Integer:0,opts:OptionsPattern[]] := Module[{tmp,vars,assumptions},
 	vars=Join[{\[CapitalDelta]s, k},Values@List@opts];
