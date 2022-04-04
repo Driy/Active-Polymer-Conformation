@@ -10,6 +10,7 @@ BeginPackage["KernelGeneric`"]
 
 CorrelationActivity::usage = "CorrelationActivity[\[CapitalDelta]s_,k_,n] gives the spectral kernel of order n and frequency k in response to activity modulations."
 CorrelationTension::usage = "CorrelationTension[\[CapitalDelta]s_,k_,n] gives the spectral kernel of order n and frequency k in response to tension modulations."
+StiffnessActivity::usage = "StiffnessActivity[\[CapitalDelta]s_] calculates a matrix of effective Hookean interactions."
 
 Begin["`Private`"]
 

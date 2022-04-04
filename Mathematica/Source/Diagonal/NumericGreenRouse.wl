@@ -28,9 +28,12 @@ End[]
 Options[SquaredSeparationNum]={"ActivityProfile"->(1&),"TensionProfile"->(0&)};
 SquaredSeparationNum[s1_,s2_,OptionsPattern[]] := With[{ActFun=OptionValue["ActivityProfile"], TenFun=OptionValue["TensionProfile"]},
 NIntegrate[
-	ActFun[x]Green`Private`Kernel`SeparationActivity[s1-x,s2-x] + TenFun[x]Green`Private`Kernel`SeparationTension[s1-x,s2-x],
+	N[ActFun[x]Green`Private`Kernel`SeparationActivity[s1-x,s2-x] + TenFun[x]Green`Private`Kernel`SeparationTension[s1-x,s2-x],$MachinePrecision],
 	{x,-Infinity,Infinity},
-	Method->"AdaptiveMonteCarlo",
+	Method->"GlobalAdaptive",
+	WorkingPrecision->8,
+	AccuracyGoal->8,
+	MinRecursion->8,
 	Exclusions->{s1,s2}
 ]];
 
@@ -38,9 +41,12 @@ NIntegrate[
 Options[TangentCorrelationNum]={"ActivityProfile"->(1&)};
 TangentCorrelationNum[s1_,s2_,OptionsPattern[]] := With[{ActFun=OptionValue["ActivityProfile"]},
 NIntegrate[
-	ActFun[x]Green`Private`Kernel`TangentCorrelationActivity[s1-x,s2-x],
+	N[ActFun[x]Green`Private`Kernel`TangentCorrelationActivity[s1-x,s2-x],$MachinePrecision],
 	{x,-Infinity,Infinity},
-	Method->"AdaptiveMonteCarlo",
+	Method->"GlobalAdaptive",
+	WorkingPrecision->8,
+	AccuracyGoal->8,
+	MinRecursion->8,
 	Exclusions->{s1,s2}
 ]];
 
