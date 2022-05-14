@@ -1,10 +1,12 @@
 module ActivePolymer
 
 include("./StandardFunctions.jl")
-include("./FourierTransform.jl")
-include("./ForwardTransform.jl")
-include("./InverseTransform.jl")
+include("./WrapperFFTW.jl")
+include("./MethodsReal.jl")
+include("./MethodsSpectral.jl")
+include("./TransformForward.jl")
+include("./TransformBackward.jl")
 
-export FourierTransform, ForwardTransform, InverseTransform
+export WrapperFFTW, MethodsReal, MethodsSpectral, TransformForward, TransformBackward
 
 end

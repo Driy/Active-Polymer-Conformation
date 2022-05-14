@@ -1,4 +1,4 @@
-module FourierTransform
+module WrapperFFTW
 
 using FFTW
 
@@ -38,7 +38,7 @@ end
 """
 Wrapper function for inverse Fourier transform.
 """
-function inverse(matrix::AbstractMatrix; fourier_type)
+function backward(matrix::AbstractMatrix; fourier_type)
     if fourier_type==DCT
         return idct(matrix)
     elseif fourier_type==FFT
@@ -51,7 +51,7 @@ end
 """
 Wrapper function for inplace inverse Fourier transform.
 """
-function inverse!(matrix::AbstractMatrix; fourier_type)
+function backward!(matrix::AbstractMatrix; fourier_type)
     if fourier_type==DCT
         return idct!(matrix)
     elseif fourier_type==FFT
