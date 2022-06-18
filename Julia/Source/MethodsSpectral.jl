@@ -7,13 +7,13 @@ export activity_to_correlation!, correlation_to_activity!
 """
 activity_to_correlation!(matrix::AbstractMatrix; J::Function, fourier_type)
 
-Map the noise correlation matrix `tmp` in Fourier space to a correlation matrix between different Rouse modes at the same time, for a polymer with Jacobian `J::Function`. Specify `fourier_type` to switch between different fourier transforms such as DCT or FFT.
+Map the noise correlation matrix `matrix` in Fourier space to a correlation matrix between different Rouse modes at the same time, for a polymer with diagonal Jacobian `J::Function`. Specify `fourier_type` to switch between different fourier transforms such as DCT or FFT.
 
 Since we are dealing with discrete Fourier transforms, it is tedious to extend this method to determine the tangent-tangent autocorrelation function. For that specific purpose, there is the separate discrete method [`real_R_to_ttacf`](@doc), which operates in real space.
 
 ## Example
 ```julia-repl
-julia> fourier_C_to_R!(DCT, C, J₀);
+julia> activity_to_correlation!(C, J=J₀, fourier_type=WrapperFFTW.DCT);
 ```
 """
 function activity_to_correlation!(matrix::AbstractMatrix; J::Function, fourier_type)
@@ -26,7 +26,7 @@ function activity_to_correlation!(matrix::AbstractMatrix; J::Function, fourier_t
     # Make sure that the homogeneous mode is not NaN! 
     # It is irrelevant for the mean square separation anyways.
     if !isfinite(matrix[begin,begin])
-        matrix[begin,begin] = 0
+        matrix[begin,begin] = 0;
     end
 end
 

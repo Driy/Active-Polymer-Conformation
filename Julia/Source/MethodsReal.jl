@@ -1,6 +1,7 @@
 module MethodsReal
 
 using LinearAlgebra
+using Statistics
 
 using ..WrapperFFTW
 
@@ -27,7 +28,7 @@ Calculate mean squared separation matrix from the correlation matrix between dif
 
 ## Example
 ```julia-repl
-julia> ΔR = X_to_ΔR(R);
+julia> ΔR = correlation_to_separation(RX);
 ```
 """
 function correlation_to_separation(matrix::AbstractMatrix)
@@ -39,13 +40,27 @@ function correlation_to_separation(matrix::AbstractMatrix)
 end
 
 """
+correlation_split(matrix::AbstractMatrix)
+
+Calculate average radial position and mean squared separation matrix from the correlation matrix between different Rouse modes (`matrix`).
+
+## Example
+```julia-repl
+julia> ΔR = correlation_to_separation(RX);
+```
+"""
+function correlation_split(matrix::AbstractMatrix)
+    return correlation_to_position(matrix), correlation_to_separation(matrix)
+end
+
+"""
 position_and_separation_to_correlation(matrix::AbstractMatrix)
 
 Calculate mean squared separation matrix from the correlation matrix between different Rouse modes (`matrix`).
 
 ## Example
 ```julia-repl
-julia> ΔR = real_R_to_ΔR(R);
+julia> RX = position_and_separation_to_correlation(R, ΔR);
 ```
 """
 function position_and_separation_to_correlation(vector_position::AbstractVector, matrix_separation::AbstractMatrix)
@@ -54,6 +69,15 @@ function position_and_separation_to_correlation(vector_position::AbstractVector,
             0.5( vector_position[x] + vector_position[y] - matrix_separation[x,y] )
         end
         for id in CartesianIndices(matrix_separation)] |> real;
+end
+
+"""
+marginalize_translation(matrix::AbstractMatrix)
+
+Marginalize diagonal translations of the given matrix. Returns average value as a function of the distance to the diagonal.
+"""
+function marginalize_translation(matrix::AbstractMatrix)
+    return [diag(matrix,i) |> mean for i in 0:size(matrix,1)-1];
 end
 
 end

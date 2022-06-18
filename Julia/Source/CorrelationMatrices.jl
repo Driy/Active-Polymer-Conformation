@@ -9,7 +9,7 @@ export diagonal_generic, dense_random, dense_box
 Generate diagonal correlation matrix of size `matrix_size`. Pass `profile` to set the spatial profile of the independent activity modulations.
 """
 function diagonal_generic(matrix_size::Int64; profile::Function=(s->1.0))
-    return Diagonal([profile(s) for s=0:matrix_size-1]);
+    return [profile(s) for s=0:matrix_size-1] |> diagm;
 end
 
 """

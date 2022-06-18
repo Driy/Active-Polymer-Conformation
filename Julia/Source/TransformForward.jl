@@ -1,5 +1,7 @@
 module TransformForward
 
+using LinearAlgebra
+
 using ..WrapperFFTW
 using ..MethodsReal
 using ..MethodsSpectral
@@ -8,9 +10,9 @@ using ..StandardFunctions
 export compute_conformation
 
 """
-mean_square_separation(matrix::AbstractMatrix; J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
+compute_conformation(matrix_activity::AbstractMatrix; J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
 
-Calculate the mean square separation of a polymer with given correlation matrix C and Jacobian J.
+Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
 Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
 """
 function compute_conformation(matrix_activity::AbstractMatrix; 
@@ -22,7 +24,29 @@ function compute_conformation(matrix_activity::AbstractMatrix;
     # transform to real space
     WrapperFFTW.backward!(tmp, fourier_type = fourier_type);
     # return mean square separation
-    return MethodsReal.correlation_to_position(tmp), MethodsReal.correlation_to_separation(tmp);
+    return tmp;
+end
+
+"""
+compute_conformation(matrix_activity::AbstractMatrix; J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
+
+Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
+Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
+"""
+function compute_conformation(vector_activity::AbstractVector; 
+        J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
+    return compute_conformation(vector_activity |> diagm, J=J, fourier_type=fourier_type);
+end
+
+"""
+compute_conformation(matrix_activity::AbstractMatrix; J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
+
+Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
+Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
+"""
+function compute_conformation(scalar_activity::Float64, N::Int64; 
+        J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
+    return compute_conformation(fill(scalar_activity, N) |> diagm, J=J, fourier_type=fourier_type);
 end
 
 end
