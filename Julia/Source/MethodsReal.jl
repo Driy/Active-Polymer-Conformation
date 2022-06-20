@@ -5,7 +5,7 @@ using Statistics
 
 using ..WrapperFFTW
 
-export correlation_to_position, correlation_to_separation, position_and_separation_to_correlation
+export correlation_to_position, correlation_to_separation, position_and_separation_to_correlation, correlation_split, marginalize_translation
 
 """
 correlation_to_position(matrix::AbstractMatrix)

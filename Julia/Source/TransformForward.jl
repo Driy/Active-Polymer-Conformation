@@ -7,7 +7,7 @@ using ..MethodsReal
 using ..MethodsSpectral
 using ..StandardFunctions
 
-export compute_conformation
+export compute_conformation, compute_conformation_grad
 
 """
 compute_conformation(matrix_activity::AbstractMatrix; J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
@@ -35,7 +35,7 @@ Use the argument `fourier_type` to specialize this function to specific transfor
 """
 function compute_conformation(vector_activity::AbstractVector; 
         J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
-    return compute_conformation(vector_activity |> diagm, J=J, fourier_type=fourier_type);
+    return compute_conformation(vector_activity |> diagm, J = J, fourier_type=fourier_type);
 end
 
 """
@@ -44,9 +44,55 @@ compute_conformation(matrix_activity::AbstractMatrix; J::Function = StandardFunc
 Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
 Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
 """
-function compute_conformation(scalar_activity::Float64, N::Int64; 
+function compute_conformation(scalar_activity::Real, N::Integer; 
         J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
-    return compute_conformation(fill(scalar_activity, N) |> diagm, J=J, fourier_type=fourier_type);
+    return compute_conformation(fill(scalar_activity, N) |> diagm, J = J, fourier_type=fourier_type);
+end
+
+"""
+compute_conformation_grad(matrix_activity::AbstractMatrix; J::Function, dJ_dα::Function, fourier_type = WrapperFFTW.DCT)
+
+This is a gradient method that computes the response to changing a parameter in the Jacobian. Takes the derivative of the Jacobian as keyword argument.
+
+Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
+Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
+"""
+function compute_conformation_grad(matrix_activity::AbstractMatrix; 
+        J::Function, dJ_dα::Function, fourier_type = WrapperFFTW.DCT)
+    # transform to Fourier space; always dense!
+    tmp = WrapperFFTW.forward(matrix_activity, fourier_type = fourier_type);
+    # manipulate as needed in Fourier space
+    MethodsSpectral.activity_to_correlation_grad!(tmp, J = J, dJ_dα = dJ_dα, fourier_type = fourier_type);
+    # transform to real space
+    WrapperFFTW.backward!(tmp, fourier_type = fourier_type);
+    # return mean square separation
+    return tmp;
+end
+
+"""
+compute_conformation_grad(matrix_activity::AbstractMatrix; J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
+
+This is a gradient method that computes the response to changing a parameter in the Jacobian. Takes the derivative of the Jacobian as keyword argument.
+
+Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
+Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
+"""
+function compute_conformation_grad(vector_activity::AbstractVector; 
+        J::Function, dJ_dα::Function, fourier_type = WrapperFFTW.DCT)
+    return compute_conformation_grad(vector_activity |> diagm, J = J, dJ_dα = dJ_dα, fourier_type=fourier_type);
+end
+
+"""
+compute_conformation_grad(matrix_activity::AbstractMatrix; J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
+
+This is a gradient method that computes the response to changing a parameter in the Jacobian. Takes the derivative of the Jacobian as keyword argument.
+
+Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
+Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
+"""
+function compute_conformation_grad(scalar_activity::Real, N::Integer; 
+        J::Function, dJ_dα::Function, fourier_type = WrapperFFTW.DCT)
+    return compute_conformation_grad(fill(scalar_activity, N) |> diagm, J = J, dJ_dα = dJ_dα, fourier_type=fourier_type);
 end
 
 end
