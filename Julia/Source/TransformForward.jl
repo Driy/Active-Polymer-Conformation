@@ -33,9 +33,8 @@ compute_conformation(matrix_activity::AbstractMatrix; J::Function = StandardFunc
 Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
 Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
 """
-function compute_conformation(vector_activity::AbstractVector; 
-        J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
-    return compute_conformation(vector_activity |> diagm, J = J, fourier_type=fourier_type);
+function compute_conformation(vector_activity::AbstractVector; kwargs...)
+    return compute_conformation(vector_activity |> diagm; kwargs...);
 end
 
 """
@@ -44,9 +43,8 @@ compute_conformation(matrix_activity::AbstractMatrix; J::Function = StandardFunc
 Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
 Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
 """
-function compute_conformation(scalar_activity::Real, N::Integer; 
-        J::Function = StandardFunctions.J₀, fourier_type = WrapperFFTW.DCT)
-    return compute_conformation(fill(scalar_activity, N) |> diagm, J = J, fourier_type=fourier_type);
+function compute_conformation(scalar_activity::Real, N::Integer; kwargs...)
+    return compute_conformation(fill(scalar_activity, N) |> diagm; kwargs...);
 end
 
 """
@@ -77,9 +75,8 @@ This is a gradient method that computes the response to changing a parameter in 
 Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
 Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
 """
-function compute_conformation_grad(vector_activity::AbstractVector; 
-        J::Function, dJ_dα::Function, fourier_type = WrapperFFTW.DCT)
-    return compute_conformation_grad(vector_activity |> diagm, J = J, dJ_dα = dJ_dα, fourier_type=fourier_type);
+function compute_conformation_grad(vector_activity::AbstractVector; kwargs...)
+    return compute_conformation_grad(vector_activity |> diagm; kwargs...);
 end
 
 """
@@ -90,9 +87,8 @@ This is a gradient method that computes the response to changing a parameter in 
 Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
 Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
 """
-function compute_conformation_grad(scalar_activity::Real, N::Integer; 
-        J::Function, dJ_dα::Function, fourier_type = WrapperFFTW.DCT)
-    return compute_conformation_grad(fill(scalar_activity, N) |> diagm, J = J, dJ_dα = dJ_dα, fourier_type=fourier_type);
+function compute_conformation_grad(scalar_activity::Real, N::Integer; kwargs...)
+    return compute_conformation_grad(fill(scalar_activity, N) |> diagm; kwargs...);
 end
 
 end

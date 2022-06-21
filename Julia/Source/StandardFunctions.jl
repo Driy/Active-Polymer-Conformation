@@ -13,7 +13,7 @@ julia> J₀(1.0)
 1.0
 ```
 """
-function J₀(q)
+@. function J₀(q)
     return q^2;
 end
 
@@ -28,8 +28,10 @@ julia> J(1.0)
 1.0
 ```
 """
-function J(q; α=0, κ=0, n=4)
-    return α + q^2 + κ*q^n;
+function J(α::Real=0.0, κ::Real=0.0, n::Real=4)
+    @. return function(q)
+        return α + q^2 + κ*q^n;
+    end
 end
 
 """
@@ -43,8 +45,10 @@ julia> dJ_dα(1.0)
 1.0
 ```
 """
-function dJ_dα(q; α=0, κ=0, n=4)
-    return 1.0;
+function dJ_dα(α::Real=0.0, κ::Real=0.0, n::Real=4)
+    @. return function(q)
+        return 1.0;
+    end
 end
 
 """
@@ -58,8 +62,10 @@ julia> dJ_dκ(1.0)
 1.0
 ```
 """
-function dJ_dκ(q; α=0, κ=0, n=4)
-    return q^n;
+function dJ_dκ(α::Real=0.0, κ::Real=0.0, n::Real=4)
+    @. return function(q)
+        return q^n;
+    end
 end
 
 end

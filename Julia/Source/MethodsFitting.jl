@@ -11,23 +11,23 @@ using ..WrapperFFTW
 
 function model_numeric_dense(N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4)
     return TransformForward.compute_conformation(
-        T, N, J=(q->StandardFunctions.J(q; α=α, κ=κ, n=n)), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
+        T, N, J=StandardFunctions.J(α, κ, n), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
 end
 
 function model_numeric_dense(T::AbstractVector, α::Real=0, κ::Real=0; n::Real=4)
     # compute semianalytic solution for homogeneous activity matrix
     return TransformForward.compute_conformation(
-        T, J=(q->StandardFunctions.J(q; α=α, κ=κ, n=n)), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
+        T, J=StandardFunctions.J(α, κ, n), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
 end
 
 function model_numeric_dense_grad(N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4)
     return TransformForward.compute_conformation(
-        1.0, N, J=(q->StandardFunctions.J(q; α=α, κ=κ, n=n)), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
+        1.0, N, J=StandardFunctions.J(α, κ, n), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
 end
 
 function model_numeric_dense_grad(dJ_dα::Function, N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4)
     return TransformForward.compute_conformation_grad(
-        T, N, J=(q->StandardFunctions.J(q; α=α, κ=κ, n=n)), dJ_dα=(q->dJ_dα(q; α=α, κ=κ, n=n)), 
+        T, N, J=StandardFunctions.J(α, κ, n), dJ_dα=dJ_dα(α, κ, n), 
         fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
 end
 
