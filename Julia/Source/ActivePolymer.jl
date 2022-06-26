@@ -1,5 +1,6 @@
 module ActivePolymer
 
+include("./CorrelationMatrices.jl")
 include("./StandardFunctions.jl")
 include("./WrapperFFTW.jl")
 include("./MethodsReal.jl")
