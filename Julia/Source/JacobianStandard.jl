@@ -1,4 +1,4 @@
-module StandardFunctions
+module JacobianStandard
 
 export J₀, J, dJ_dα, dJ_dκ
 
@@ -30,7 +30,7 @@ julia> J(1.0)
 """
 function J(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return α + q^2 + κ*q^n;
+        return α + q^2 + κ*abs(q)^n;
     end
 end
 
@@ -64,7 +64,7 @@ julia> dJ_dκ(1.0)
 """
 function dJ_dκ(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return q^n;
+        return abs(q)^n;
     end
 end
 

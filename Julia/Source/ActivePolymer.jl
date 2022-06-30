@@ -1,7 +1,8 @@
 module ActivePolymer
 
 include("./CorrelationMatrices.jl")
-include("./StandardFunctions.jl")
+include("./JacobianStandard.jl")
+include("./JacobianDiscrete.jl")
 include("./WrapperFFTW.jl")
 include("./MethodsReal.jl")
 include("./MethodsSpectral.jl")
