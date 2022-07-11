@@ -3,6 +3,7 @@ module ActivePolymer
 include("./CorrelationMatrices.jl")
 include("./JacobianStandard.jl")
 include("./JacobianDiscrete.jl")
+include("./JacobianSaturating.jl")
 include("./WrapperFFTW.jl")
 include("./MethodsReal.jl")
 include("./MethodsSpectral.jl")

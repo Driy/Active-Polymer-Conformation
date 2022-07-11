@@ -175,7 +175,8 @@ model_analytic_marginalized(Δs::AbstractVector, T::Real, α::Real, κ::Real)
 
 Analytic expression for the marginalized mean squared separation between different monomers of a continuous polymer, for a translationally invariant system where the mean squared separation only depends on the distance in sequence space.
 """
-function model_analytic_marginalized(Δs::AbstractVector, T::Real, α::Real, κ::Real)
+function model_analytic_marginalized(N::Integer, T::Real, α::Real, κ::Real)
+    Δs = Vector{Float64}(0:N-1);
     return MethodsAnalytic.separation_generic(Δs; T=T, α=α, κ=κ);    
 end
 
@@ -186,9 +187,8 @@ Determine the mean squared error of a proposed analytic model when compared to t
 """
 function residual_analytic(ΔR_marginalized::AbstractVector; padding::Real=0.75)
     N, N_padding = (1, padding) .* size(ΔR_marginalized, 1) .|> Int64;
-    Δs = Vector{Float64}(0:N-1);
     return function(parameters)
-        residual_vector = model_analytic_marginalized(Δs, parameters...) - ΔR_marginalized;
+        residual_vector = model_analytic_marginalized(N, parameters...) - ΔR_marginalized;
         squared_error_vector = residual_vector.^2;
         return squared_error_vector[begin:end-N_padding] |> mean;
     end
@@ -199,7 +199,7 @@ coupling_matrix!(mat, i, j, parameters; kwargs...)
 
 Determine elements of the coupling matrix, which determines the gradient of the [proposed mean squared separation matrix] squared, with respect to localized changes in activity.
 """
-function coupling_matrix!(mat, i, j, parameters; kwargs...)
+function populate_coupling_matrix!(mat, i, j, parameters; kwargs...)
     N = size(mat, 1)
     tmp1 = model_numeric_dense(
         CorrelationMatrices.diagonal_delta(i, N), parameters[2:end]...; kwargs...);
@@ -213,7 +213,7 @@ coupling_vector!(mat, i, j, parameters; kwargs...)
 
 Determine elements of the coupling vector, which determines the gradient of the [proposed mean squared separation matrix] times the [mean squared separation data], with respect to localized changes in activity.
 """
-function coupling_vector!(vec, i, ΔR, parameters; kwargs...)
+function populate_coupling_vector!(vec, i, ΔR, parameters; kwargs...)
     N = size(vec, 1)
     tmp1 = model_numeric_dense(
         CorrelationMatrices.diagonal_delta(i, N), parameters[2:end]...; kwargs...);
