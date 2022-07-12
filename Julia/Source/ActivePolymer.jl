@@ -1,5 +1,7 @@
 module ActivePolymer
 
+include("./CorrelationMatrices.jl")
+
 module Jacobian
 include("./Jacobian/Standard.jl")
 include("./Jacobian/Discrete.jl")
@@ -18,7 +20,11 @@ include("./Transform/Forward.jl")
 include("./Transform/Backward.jl")
 end
 
-include("./CorrelationMatrices.jl")
-include("./MethodsFitting.jl")
+module Optimization
+include("./Optimization/Model.jl")
+include("./Optimization/Residual.jl")
+include("./Optimization/Interface.jl")
+include("./Optimization/Direct.jl")
+end
 
 end
