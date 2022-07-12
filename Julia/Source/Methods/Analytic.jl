@@ -1,4 +1,4 @@
-module MethodsAnalytic
+module Analytic
 
 export separation_rouse, separation_generic
 

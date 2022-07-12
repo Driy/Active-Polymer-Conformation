@@ -1,6 +1,4 @@
-module JacobianSaturating
-
-export J₀, J, dJ_dα, dJ_dκ
+module Saturating
 
 """
 J(q; α=0, κ=0, n=4)

@@ -1,7 +1,7 @@
-module TestTransformBackward
+module Backward
 
-include("../Source/ActivePolymer.jl")
-include("../Source/CorrelationMatrices.jl")
+include("../../Source/ActivePolymer.jl")
+include("../../Source/CorrelationMatrices.jl")
 
 using Statistics
 using LinearAlgebra
@@ -13,8 +13,8 @@ Check if inverse transform yields the input of the forward transform for a const
 """
 function test_homogeneous(; N=512, tol=1e-2)
     C_diagonal    = CorrelationMatrices.diagonal_generic(N, profile=(s->1.0));
-    R_numeric, ΔR_numeric = ActivePolymer.TransformForward.compute_conformation(C_diagonal) |> ActivePolymer.MethodsReal.correlation_split;
-    C_extract     = ActivePolymer.TransformBackward.extract_excitations(R_numeric, ΔR_numeric);
+    R_numeric, ΔR_numeric = ActivePolymer.Transform.Forward.compute_conformation(C_diagonal) |> ActivePolymer.Methods.Real.correlation_split;
+    C_extract     = ActivePolymer.Transform.Backward.extract_excitations(R_numeric, ΔR_numeric);
 
     return abs.(C_diagonal - C_extract) |> mean |> x->(x<tol)
 end
@@ -26,8 +26,8 @@ Check if inverse transform yields the input of the forward transform for a const
 """
 function test_cosine(ϵ, α; N=512, tol=1e-2)
     C_diagonal    = CorrelationMatrices.diagonal_generic(N, profile=(s->1.0 + ϵ*cos(α*s)));
-    R_numeric, ΔR_numeric = ActivePolymer.TransformForward.compute_conformation(C_diagonal) |> ActivePolymer.MethodsReal.correlation_split;
-    C_extract     = ActivePolymer.TransformBackward.extract_excitations(R_numeric, ΔR_numeric);
+    R_numeric, ΔR_numeric = ActivePolymer.Transform.Forward.compute_conformation(C_diagonal) |> ActivePolymer.Methods.Real.correlation_split;
+    C_extract     = ActivePolymer.Transform.Backward.extract_excitations(R_numeric, ΔR_numeric);
 
     return abs.(C_diagonal - C_extract) |> mean |> x->(x<tol)
 end
@@ -40,8 +40,8 @@ Check if inverse transform yields the input of the forward transform for a rando
 function test_random(; N=512, tol=1e-2, num=1, remove_homogeneous=false)
     function inner()
         C_random      = CorrelationMatrices.dense_random(N, remove_homogeneous = remove_homogeneous);
-        R_numeric, ΔR_numeric = ActivePolymer.TransformForward.compute_conformation(C_random) |> ActivePolymer.MethodsReal.correlation_split;
-        C_extract     = ActivePolymer.TransformBackward.extract_excitations(R_numeric, ΔR_numeric);
+        R_numeric, ΔR_numeric = ActivePolymer.Transform.Forward.compute_conformation(C_random) |> ActivePolymer.Methods.Real.correlation_split;
+        C_extract     = ActivePolymer.Transform.Backward.extract_excitations(R_numeric, ΔR_numeric);
         return abs.((C_random - C_extract) / Diagonal(C_random) ) |> mean |> x->(x<tol)
     end
 

@@ -1,6 +1,4 @@
-module JacobianStandard
-
-export J₀, J, dJ_dα, dJ_dκ
+module Discrete
 
 """
 J₀(q)
@@ -14,7 +12,7 @@ julia> J₀(1.0)
 ```
 """
 @. function J₀(q)
-    return q^2;
+    return ( 2sin(q/2) )^2;
 end
 
 """
@@ -30,7 +28,7 @@ julia> J(1.0)
 """
 function J(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return α + q^2 + κ*abs(q)^n;
+        return α + ( 2sin(q/2) )^2 + κ*abs( 2sin(q/2) )^n;
     end
 end
 
@@ -64,7 +62,7 @@ julia> dJ_dκ(1.0)
 """
 function dJ_dκ(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return abs(q)^n;
+        return abs( 2sin(q/2) )^n;
     end
 end
 

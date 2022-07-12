@@ -1,4 +1,4 @@
-module WrapperFFTW
+module FastFourier
 
 using FFTW
 

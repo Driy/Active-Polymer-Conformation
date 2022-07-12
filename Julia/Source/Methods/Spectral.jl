@@ -1,6 +1,6 @@
-module MethodsSpectral
+module Spectral
 
-using ..WrapperFFTW
+using ..FastFourier
 
 export activity_to_correlation!, activity_to_correlation_grad!, correlation_to_activity!
 
@@ -13,12 +13,12 @@ Since we are dealing with discrete Fourier transforms, it is tedious to extend t
 
 ## Example
 ```julia-repl
-julia> activity_to_correlation!(C, J=J₀, fourier_type=WrapperFFTW.DCT);
+julia> activity_to_correlation!(C, J=J₀, fourier_type=FastFourier.DCT);
 ```
 """
 function activity_to_correlation!(matrix::AbstractMatrix; J::Function, fourier_type)
     for id in CartesianIndices(matrix)
-        let (q,k) = WrapperFFTW.frequency(id, matrix, fourier_type = fourier_type)
+        let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
             matrix[id] /= J(q) + J(k);
         end
@@ -41,12 +41,12 @@ Since we are dealing with discrete Fourier transforms, it is tedious to extend t
 
 ## Example
 ```julia-repl
-julia> activity_to_correlation_grad!(C, J=J₀, fourier_type=WrapperFFTW.DCT);
+julia> activity_to_correlation_grad!(C, J=J₀, fourier_type=FastFourier.DCT);
 ```
 """
 function activity_to_correlation_grad!(matrix::AbstractMatrix; J::Function, dJ_dα::Function, fourier_type)
     for id in CartesianIndices(matrix)
-        let (q,k) = WrapperFFTW.frequency(id, matrix, fourier_type = fourier_type)
+        let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
             matrix[id] /= (J(q) + J(k))^2;
             matrix[id] *= -(dJ_dα(q) + dJ_dα(k));
@@ -66,7 +66,7 @@ Map the position correlation in Fourier space `matrix` to return the correspondi
 """
 function correlation_to_activity!(matrix::AbstractMatrix; J::Function, fourier_type)
     for id in CartesianIndices(matrix)
-        let (q,k) = WrapperFFTW.frequency(id, matrix, fourier_type = fourier_type)
+        let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
             matrix[id] *= J(q) + J(k);
         end

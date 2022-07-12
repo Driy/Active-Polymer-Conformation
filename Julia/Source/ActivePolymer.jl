@@ -1,17 +1,24 @@
 module ActivePolymer
 
-include("./CorrelationMatrices.jl")
-include("./JacobianStandard.jl")
-include("./JacobianDiscrete.jl")
-include("./JacobianSaturating.jl")
-include("./WrapperFFTW.jl")
-include("./MethodsReal.jl")
-include("./MethodsSpectral.jl")
-include("./MethodsAnalytic.jl")
-include("./TransformForward.jl")
-include("./TransformBackward.jl")
-include("./MethodsFitting.jl")
+module Jacobian
+include("./Jacobian/Standard.jl")
+include("./Jacobian/Discrete.jl")
+include("./Jacobian/Saturating.jl")
+end
 
-export WrapperFFTW, MethodsReal, MethodsSpectral, MethodsAnalytic, TransformForward, TransformBackward, MethodsFitting
+module Methods
+include("./Methods/FastFourier.jl")
+include("./Methods/Real.jl")
+include("./Methods/Spectral.jl")
+include("./Methods/Analytic.jl")
+end
+
+module Transform
+include("./Transform/Forward.jl")
+include("./Transform/Backward.jl")
+end
+
+include("./CorrelationMatrices.jl")
+include("./MethodsFitting.jl")
 
 end

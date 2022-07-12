@@ -1,9 +1,7 @@
-module MethodsReal
+module Real
 
 using LinearAlgebra
 using Statistics
-
-using ..WrapperFFTW
 
 export correlation_to_position, correlation_to_separation, position_and_separation_to_correlation, correlation_split, marginalize_translation
 

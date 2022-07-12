@@ -3,21 +3,21 @@ module MethodsFitting
 using LinearAlgebra
 using Statistics
 
-using ..TransformForward
-using ..JacobianStandard
 using ..CorrelationMatrices
-using ..MethodsAnalytic
-using ..MethodsReal
-using ..WrapperFFTW
+
+using ..Transform
+using ..Jacobian
+using ..Methods
+using ..Methods.FastFourier
 
 """
 model_numeric_dense(N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4)
 
 Compute mean squared separation between different monomers of an `N`-Polymer with a confining harmonic spring `α`, bending rigidity `κ`, and a homogeneous level of activity `T`.
 """
-function model_numeric_dense(N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4, jacmodule=JacobianStandard)
-    return TransformForward.compute_conformation(
-        T, N, J=jacmodule.J(α, κ, n), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
+function model_numeric_dense(N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4, jacmodule=Jacobian.Standard)
+    return Transform.Forward.compute_conformation(
+        T, N, J=jacmodule.J(α, κ, n), fourier_type=FastFourier.DCT) |> Methods.Real.correlation_to_separation;
 end
 
 """
@@ -25,10 +25,10 @@ model_numeric_dense(T::AbstractVector, α::Real=0, κ::Real=0; n::Real=4)
 
 Compute mean squared separation between different monomers of a Polymer with a confining harmonic spring `α`, bending rigidity `κ`, and an inhomogeneous level of activity given by the vector `T`.
 """
-function model_numeric_dense(T::AbstractVector, α::Real=0, κ::Real=0; n::Real=4, jacmodule=JacobianStandard)
+function model_numeric_dense(T::AbstractVector, α::Real=0, κ::Real=0; n::Real=4, jacmodule=Jacobian.Standard)
     # compute semianalytic solution for homogeneous activity matrix
-    return TransformForward.compute_conformation(
-        T, J=jacmodule.J(α, κ, n), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
+    return Transform.Forward.compute_conformation(
+        T, J=jacmodule.J(α, κ, n), fourier_type=FastFourier.DCT) |> Methods.Real.correlation_to_separation;
 end
 
 """
@@ -36,10 +36,10 @@ model_numeric_dense(T::AbstractMatrix, α::Real=0, κ::Real=0; n::Real=4)
 
 Compute mean squared separation between different monomers of a Polymer with a confining harmonic spring `α`, bending rigidity `κ`, and the activity given by the matrix `T`.
 """
-function model_numeric_dense(T::AbstractMatrix, α::Real=0, κ::Real=0; n::Real=4, jacmodule=JacobianStandard)
+function model_numeric_dense(T::AbstractMatrix, α::Real=0, κ::Real=0; n::Real=4, jacmodule=Jacobian.Standard)
     # compute semianalytic solution for homogeneous activity matrix
-    return TransformForward.compute_conformation(
-        T, J=jacmodule.J(α, κ, n), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
+    return Transform.Forward.compute_conformation(
+        T, J=jacmodule.J(α, κ, n), fourier_type=FastFourier.DCT) |> Methods.Real.correlation_to_separation;
 end
 
 """
@@ -47,9 +47,9 @@ model_numeric_dense_grad(N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4)
 
 Determine how a homogeneous change in the activity affects the mean squared separation between different monomers.
 """
-function model_numeric_dense_grad(N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4, jacmodule=JacobianStandard)
-    return TransformForward.compute_conformation(
-        1.0, N, J=jacmodule.J(α, κ, n), fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
+function model_numeric_dense_grad(N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4, jacmodule=Jacobian.Standard)
+    return Transform.Forward.compute_conformation(
+        1.0, N, J=jacmodule.J(α, κ, n), fourier_type=FastFourier.DCT) |> Methods.Real.correlation_to_separation;
 end
 
 """
@@ -57,10 +57,10 @@ model_numeric_dense_grad(dJ_dα::Function, N::Integer, T::Real, α::Real=0, κ::
 
 Determine how a change in the mechanical properties of the polymer, encoded by the change in Jacobian `dJ_dα`, affects the mean squared separation between different monomers.
 """
-function model_numeric_dense_grad(dJ_dα::Function, N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4, jacmodule=JacobianStandard)
-    return TransformForward.compute_conformation_grad(
+function model_numeric_dense_grad(dJ_dα::Function, N::Integer, T::Real, α::Real=0, κ::Real=0; n::Real=4, jacmodule=Jacobian.Standard)
+    return Transform.Forward.compute_conformation_grad(
         T, N, J=jacmodule.J(α, κ, n), dJ_dα=dJ_dα(α, κ, n), 
-        fourier_type=WrapperFFTW.DCT) |> MethodsReal.correlation_to_separation;
+        fourier_type=FastFourier.DCT) |> Methods.Real.correlation_to_separation;
 end
 
 """
@@ -69,7 +69,7 @@ model_numeric_marginalized(parameters...; kwargs...)
 Marginalized mean squared separation between different monomers of a polymer, for a translationally invariant system where the mean squared separation only depends on the distance in sequence space.
 """
 function model_numeric_marginalized(parameters...; kwargs...)
-    return model_numeric_dense(parameters...; kwargs...) |> MethodsReal.marginalize_translation;
+    return model_numeric_dense(parameters...; kwargs...) |> Methods.Real.marginalize_translation;
 end
 
 """
@@ -78,7 +78,7 @@ model_numeric_marginalized_grad(parameters...; kwargs...)
 Determine how a homogeneous change in the activity affects the (marginalized) mean squared separation between different monomers.
 """
 function model_numeric_marginalized_grad(parameters...; kwargs...)
-    return model_numeric_dense_grad(parameters...; kwargs...) |> MethodsReal.marginalize_translation;
+    return model_numeric_dense_grad(parameters...; kwargs...) |> Methods.Real.marginalize_translation;
 end
 
 """
@@ -87,7 +87,7 @@ model_numeric_marginalized_grad(dJ_dα::Function, parameters...; kwargs...)
 Determine how a change in the mechanical properties of the polymer, encoded by the change in Jacobian `dJ_dα`, affects the (marginalized) mean squared separation between different monomers.
 """
 function model_numeric_marginalized_grad(dJ_dα::Function, parameters...; kwargs...)
-    return model_numeric_dense_grad(dJ_dα, parameters...; kwargs...) |> MethodsReal.marginalize_translation;
+    return model_numeric_dense_grad(dJ_dα, parameters...; kwargs...) |> Methods.Real.marginalize_translation;
 end
 
 """
@@ -123,7 +123,7 @@ residual_numeric_grad(ΔR_marginalized::AbstractVector; padding::Real=0.75, kwar
 
 Method that determines the gradient with respect to the `parameters`, of the mean squared error of a proposed model when compared to the marginalized mean squared separation data `ΔR_marginalized`.
 """
-function residual_numeric_grad(ΔR_marginalized::AbstractVector; padding::Real=0.75, jacmodule=JacobianStandard, kwargs...)
+function residual_numeric_grad(ΔR_marginalized::AbstractVector; padding::Real=0.75, jacmodule=Jacobian.Standard, kwargs...)
     N, N_padding = (1, padding) .* size(ΔR_marginalized, 1) .|> Int64;
     return function(G, parameters)
         residual_vector = model_numeric_marginalized(N, parameters...; jacmodule = jacmodule, kwargs...) - ΔR_marginalized;
@@ -177,7 +177,7 @@ Analytic expression for the marginalized mean squared separation between differe
 """
 function model_analytic_marginalized(N::Integer, T::Real, α::Real, κ::Real)
     Δs = Vector{Float64}(0:N-1);
-    return MethodsAnalytic.separation_generic(Δs; T=T, α=α, κ=κ);    
+    return Methods.Analytic.separation_generic(Δs; T=T, α=α, κ=κ);    
 end
 
 """
