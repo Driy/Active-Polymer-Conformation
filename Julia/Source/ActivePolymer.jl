@@ -25,6 +25,8 @@ include("./Optimization/Model.jl")
 include("./Optimization/Residual.jl")
 include("./Optimization/Interface.jl")
 include("./Optimization/Direct.jl")
+include("./Optimization/DirectModelfree.jl")
+include("./Optimization/DirectComparable.jl")
 end
 
 end

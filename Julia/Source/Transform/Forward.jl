@@ -32,6 +32,24 @@ compute_conformation(matrix_activity::AbstractMatrix; J::Function = Jacobian.Sta
 Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
 Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
 """
+function compute_conformation(matrix_activity::AbstractMatrix, J::AbstractVector;
+        fourier_type = FastFourier.DCT)
+    # transform to Fourier space; always dense!
+    tmp = FastFourier.forward(matrix_activity, fourier_type = fourier_type);
+    # manipulate as needed in Fourier space
+    Methods.Spectral.activity_to_correlation!(tmp, J, fourier_type = fourier_type);
+    # transform to real space
+    FastFourier.backward!(tmp, fourier_type = fourier_type);
+    # return mean square separation
+    return tmp;
+end
+
+"""
+compute_conformation(matrix_activity::AbstractMatrix; J::Function = Jacobian.Standard.J₀, fourier_type = FastFourier.DCT)
+
+Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
+Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
+"""
 function compute_conformation(vector_activity::AbstractVector; kwargs...)
     return compute_conformation(vector_activity |> diagm; kwargs...);
 end

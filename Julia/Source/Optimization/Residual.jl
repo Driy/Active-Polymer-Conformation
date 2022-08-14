@@ -4,6 +4,7 @@ using LinearAlgebra
 using Statistics
 
 using ..Model
+using ...Jacobian
 
 """
 numeric(ΔR_marginalized::AbstractVector; padding::Real=0.75, kwargs...)

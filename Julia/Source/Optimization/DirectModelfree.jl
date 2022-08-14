@@ -1,14 +1,16 @@
-module Direct
+module DirectModelfree
 
 using HDF5
+using FFTW
 using Statistics
 using Distributed
 using SharedArrays
 using LinearAlgebra
 using ProgressMeter
+using ImageFiltering
 
 using ...Methods
-using ...Jacobian
+using ...Transform
 using ...CorrelationMatrices
 
 using ..Model
@@ -19,15 +21,17 @@ coupling_matrix(N, parameters; kwargs...)
 
 Determine elements of the coupling matrix, which determines the gradient of the [proposed mean squared separation matrix] squared, with respect to localized changes in activity.
 """
-function coupling_matrix(N, parameters; kwargs...)
+function coupling_matrix(J)
+    N = size(J, 1)
     mat = SharedMatrix{Float64}(N,N);
     @showprogress @distributed for i in 0:N-1
         for j in 0:min(i, N-1-i)
             # calculate matrix elements
-            tmp1 = Model.numeric_dense(
-                CorrelationMatrices.diagonal_delta(1+i, N), parameters[2:end]...; kwargs...);
-            tmp2 = Model.numeric_dense(
-                CorrelationMatrices.diagonal_delta(1+j, N), parameters[2:end]...; kwargs...);
+            
+            tmp1 = Transform.Forward.compute_conformation(
+                CorrelationMatrices.diagonal_delta(1+i, N), J) |> Methods.Real.correlation_to_separation;
+            tmp2 = Transform.Forward.compute_conformation(
+                CorrelationMatrices.diagonal_delta(1+j, N), J) |> Methods.Real.correlation_to_separation;            
             val = mean(tmp1 .* tmp2);
 
             # populate matrix and exploit its fourfold symmetry
@@ -47,13 +51,13 @@ coupling_vector!(mat, i, j, parameters; kwargs...)
 
 Determine elements of the coupling vector, which determines the gradient of the [proposed mean squared separation matrix] times the [mean squared separation data], with respect to localized changes in activity.
 """
-function coupling_vector(ΔR, parameters; kwargs...)
+function coupling_vector(ΔR, J)
     N = size(ΔR, 1)
     vec = SharedVector{Float64}(N);
     @showprogress @distributed for i in 0:N-1
         # calculate vector elements
-        tmp1 = Model.numeric_dense(
-            CorrelationMatrices.diagonal_delta(1+i, N), parameters[2:end]...; kwargs...);
+        tmp1 = Transform.Forward.compute_conformation(
+            CorrelationMatrices.diagonal_delta(1+i, N), J) |> Methods.Real.correlation_to_separation;        
         val = mean(tmp1 .* ΔR);
         
         # populate vector
@@ -65,33 +69,27 @@ function coupling_vector(ΔR, parameters; kwargs...)
     return vec;
 end
 
-function setup_direct_system(name; jacmodule=Jacobian.Discrete, modeltype=Model.Full, n=3, overwrite=false, padding::Real=0.85)
-    
-    # 
-    if jacmodule==Jacobian.Discrete
-        jacobian_type="discrete"
-    elseif jacmodule==Jacobian.Standard
-        jacobian_type="standard"
-    end
-    
+function setup_direct_system(name; overwrite=false, window=2)
+        
     # check if file exists and decide what to do
-    if (["data/", name, "_", jacobian_type, "_n=", n , ".hdf5"] |> join |> isfile) && overwrite==false
+    if (["data/", name, "_modelfree", ".hdf5"] |> join |> isfile) && overwrite==false
         return
     end
     
     R, ΔR = Interface.load_data(name);
 
-    # Three-parameter fits
-    parameters  = Interface.fit_mechanics(
-        ΔR, modeltype=modeltype, jacmodule=jacmodule, n=n, padding=padding)
+    # extract model
+    ΔR_marginalized = Methods.Real.marginalize_translation(ΔR);
+    N = size(ΔR_marginalized,1)
+    J = -1 ./ (sqrt(N) * dct(ΔR_marginalized)) |> x->imfilter(x, Kernel.gaussian((window,)))    
 
     # get rhs vector v in linear equation
-    vec = coupling_vector(ΔR, parameters.minimizer, jacmodule=jacmodule, n=n);
+    vec = coupling_vector(ΔR, J);
     
     # get lhs matrix M in linear equation. Solution (optimal distribution of activity) is M^-1 * v
-    mat = coupling_matrix(size(ΔR, 1), parameters.minimizer, jacmodule=jacmodule, n=n);
+    mat = coupling_matrix(J);
     
-    file = h5open(["data/", name, "_", jacobian_type, "_n=", n , ".hdf5"] |> join, "w")
+    file = h5open(["data/", name, "_modelfree", ".hdf5"] |> join, "w")
     create_group(file, "optimization")
     file["optimization/matrix"]=Matrix(mat)
     file["optimization/vector"]=Vector(vec)

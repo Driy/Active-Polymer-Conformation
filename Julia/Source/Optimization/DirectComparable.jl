@@ -1,4 +1,4 @@
-module Direct
+module DirectComparable
 
 using HDF5
 using Statistics
@@ -65,7 +65,25 @@ function coupling_vector(ΔR, parameters; kwargs...)
     return vec;
 end
 
-function setup_direct_system(name; jacmodule=Jacobian.Discrete, modeltype=Model.Full, n=3, overwrite=false, padding::Real=0.85)
+function setup_reference_system(name; jacmodule=Jacobian.Discrete, modeltype=Model.Full, n=3, padding::Real=0.85)
+    
+    # load data
+    R, ΔR = Interface.load_data(name);
+
+    # Three-parameter fits
+    parameters  = Interface.fit_mechanics(
+        ΔR, modeltype=modeltype, jacmodule=jacmodule, n=n, padding=padding)
+    
+    # get lhs matrix M in linear equation. Solution (optimal distribution of activity) is M^-1 * v
+    mat = coupling_matrix(size(ΔR, 1), parameters.minimizer, jacmodule=jacmodule, n=n);
+    
+    return parameters, mat, jacmodule, modeltype, n
+end
+
+function setup_direct_system(name, reference; overwrite=false)
+    
+    # import reference system
+    parameters, mat, jacmodule, modeltype, n = reference
     
     # 
     if jacmodule==Jacobian.Discrete
@@ -81,16 +99,9 @@ function setup_direct_system(name; jacmodule=Jacobian.Discrete, modeltype=Model.
     
     R, ΔR = Interface.load_data(name);
 
-    # Three-parameter fits
-    parameters  = Interface.fit_mechanics(
-        ΔR, modeltype=modeltype, jacmodule=jacmodule, n=n, padding=padding)
-
     # get rhs vector v in linear equation
     vec = coupling_vector(ΔR, parameters.minimizer, jacmodule=jacmodule, n=n);
-    
-    # get lhs matrix M in linear equation. Solution (optimal distribution of activity) is M^-1 * v
-    mat = coupling_matrix(size(ΔR, 1), parameters.minimizer, jacmodule=jacmodule, n=n);
-    
+        
     file = h5open(["data/", name, "_", jacobian_type, "_n=", n , ".hdf5"] |> join, "w")
     create_group(file, "optimization")
     file["optimization/matrix"]=Matrix(mat)

@@ -1,6 +1,5 @@
 module Interface
 
-using NPZ
 using DelimitedFiles
 using LinearAlgebra
 using Statistics
@@ -17,22 +16,20 @@ struct InvalidType <:Exception
     msg::String
 end
 
-function load_data(name, path="../Share/June03/")
-    name1 = ["comps_", name, "_rsquared"] |> join;
-    name2 = ["mean_squared_separation_comp", name] |> join;
-    R  = [path, name1, ".npy"] |> join |> NPZ.npzread;
-    ΔR = [path, name2, ".csv"] |> join |> (x->readdlm(x, ',')) |> (x->x[begin+1:end, begin+1:end]) |> Matrix{Float64};
+function load_data(name, path="../Share/")
+    R  = [path, "rsquared_", name, ".csv"] |> join |> (x->readdlm(x, ',', skipstart=1)) |> x->x[:] |> Vector{Float64};
+    ΔR = [path, "mean_squared_separation_", name, ".csv"] |> join |> (x->readdlm(x, ',', skipstart=1)) |> Matrix{Float64};
     return R, ΔR;
 end
 
-function fit_mechanics(ΔR; ModelType=Full, kwargs...)    
+function fit_mechanics(ΔR; modeltype=Model.Full, kwargs...)    
     # Three-parameter fits
-    if ModelType==Model.Full
+    if modeltype==Model.Full
         parameters = [1.0, 0.001, 0.001]
         lower = [0.0, 0.0, 0.0]
         upper = [Inf, Inf, Inf]
     # Two-parameter fits
-    elseif ModelType==Model.Reduced
+    elseif modeltype==Model.Reduced
         parameters = [1.0, 0.001]
         lower = [0.0, 0.0]
         upper = [Inf, Inf]
@@ -45,6 +42,13 @@ function fit_mechanics(ΔR; ModelType=Full, kwargs...)
         Residual.numeric(ΔR_marginalized; kwargs...), 
         Residual.numeric_grad(ΔR_marginalized; kwargs...),
         lower, upper, parameters)
+end
+
+function extract_mechanics(ΔR; window=1)
+    ΔR_marginalized = ActivePolymer.Methods.Real.marginalize_translation(ΔR);
+    N = size(ΔR_marginalized,1);
+    J = -1 ./ (sqrt(N) * dct(ΔR_marginalized)) |> x->imfilter(x, Kernel.gaussian((window,)));
+    return J;
 end
 
 end
