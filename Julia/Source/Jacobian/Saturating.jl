@@ -13,7 +13,7 @@ julia> J(1.0)
 """
 function J(α::Real=0.0, κ::Real=0.0, n::Real=2)
     @. return function(q)
-        return (α + q^2) / (1.0 + κ * abs(q)^n);
+        return 0.5 * (α + q^2) / (1.0 + κ * abs(q)^n);
     end
 end
 
@@ -30,7 +30,7 @@ julia> dJ_dα(1.0)
 """
 function dJ_dα(α::Real=0.0, κ::Real=0.0, n::Real=2)
     @. return function(q)
-        return (1.0) / (1.0 + κ * abs(q)^n);
+        return (0.5) / (1.0 + κ * abs(q)^n);
     end
 end
 
@@ -47,7 +47,7 @@ julia> dJ_dκ(1.0)
 """
 function dJ_dκ(α::Real=0.0, κ::Real=0.0, n::Real=2)
     @. return function(q)
-        return -(α + q^2) / (1.0 + κ * abs(q)^n)^2 * abs(q)^n;
+        return -0.5*(α + q^2) / (1.0 + κ * abs(q)^n)^2 * abs(q)^n;
     end
 end
 

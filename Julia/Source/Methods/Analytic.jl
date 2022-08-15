@@ -11,7 +11,7 @@ Determine the analyic mean squared separation between the Rouse monomers at posi
 function separation_rouse(s₁, s₂; amplitude::Real=0, wavemode::Real=1)
     Δs = abs(s₁-s₂);
     S  = s₁+s₂;
-    return 0.5Δs + (amplitude/wavemode) * cos(wavemode * 0.5S) * ( cos(wavemode * 0.5Δs) - exp(-wavemode * 0.5Δs) )
+    return Δs + 2*(amplitude/wavemode) * cos(wavemode * 0.5S) * ( cos(wavemode * 0.5Δs) - exp(-wavemode * 0.5Δs) )
 end
 
 """
@@ -25,7 +25,7 @@ function correlation_generic(Δs; T::Real, α::Real, κ::Real)
     tmp = sqrt(1+determinant)*exp.(-Δs*sqrt( (1-determinant)/(2κ) ))
     tmp -= sqrt(1-determinant)*exp.(-Δs*sqrt( (1+determinant)/(2κ) ))
     tmp /= 4sqrt(2α)*determinant
-    return T*tmp |> real
+    return 2T*tmp |> real
 end
 
 """

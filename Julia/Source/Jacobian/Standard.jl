@@ -12,7 +12,7 @@ julia> J₀(1.0)
 ```
 """
 @. function J₀(q)
-    return q^2;
+    return 0.5 * q^2;
 end
 
 """
@@ -28,7 +28,7 @@ julia> J(1.0)
 """
 function J(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return α + q^2 + κ*abs(q)^n;
+        return 0.5 * ( α + q^2 + κ*abs(q)^n );
     end
 end
 
@@ -45,7 +45,7 @@ julia> dJ_dα(1.0)
 """
 function dJ_dα(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return 1.0;
+        return 0.5;
     end
 end
 
@@ -62,7 +62,7 @@ julia> dJ_dκ(1.0)
 """
 function dJ_dκ(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return abs(q)^n;
+        return 0.5 * abs(q)^n;
     end
 end
 

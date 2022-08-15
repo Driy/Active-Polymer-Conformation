@@ -12,7 +12,7 @@ julia> J₀(1.0)
 ```
 """
 @. function J₀(q)
-    return ( 2sin(q/2) )^2;
+    return 0.5 * ( 2sin(q/2) )^2;
 end
 
 """
@@ -28,7 +28,7 @@ julia> J(1.0)
 """
 function J(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return α + ( 2sin(q/2) )^2 + κ*abs( 2sin(q/2) )^n;
+        return 0.5 * ( α + ( 2sin(q/2) )^2 + κ*abs( 2sin(q/2) )^n );
     end
 end
 
@@ -45,7 +45,7 @@ julia> dJ_dα(1.0)
 """
 function dJ_dα(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return 1.0;
+        return 0.5;
     end
 end
 
@@ -62,7 +62,7 @@ julia> dJ_dκ(1.0)
 """
 function dJ_dκ(α::Real=0.0, κ::Real=0.0, n::Real=4)
     @. return function(q)
-        return abs( 2sin(q/2) )^n;
+        return 0.5 * abs( 2sin(q/2) )^n;
     end
 end
 
