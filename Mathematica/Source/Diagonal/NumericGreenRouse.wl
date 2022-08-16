@@ -14,9 +14,9 @@ Begin["`Private`"]
 
 Begin["`Kernel`"]
 
-SeparationActivity[s1_,s2_] := 1/(4Pi) (2Log[s1^2+s2^2]-Log[2s1^2]-Log[2s2^2]);
-SeparationTension[s1_,s2_] := 1/4 (RealSign[s1]RealSign[s2]-1);
-TangentCorrelationActivity[s1_,s2_] := 1/Pi (s1 s2)/(s1^2+s2^2)^2;
+SeparationActivity[s1_,s2_] := 1/(2Pi) (2Log[s1^2+s2^2]-Log[2s1^2]-Log[2s2^2]);
+SeparationTension[s1_,s2_] := (1/2) (RealSign[s1]RealSign[s2]-1);
+TangentCorrelationActivity[s1_,s2_] := 2/Pi (s1 s2)/(s1^2+s2^2)^2;
 
 End[]
 

@@ -16,8 +16,9 @@ Begin["`Private`"]
 
 
 (* Define Jacobian *)
+(* Measured in terms of characteristic activity over characteristic length squared times inverse friction *)
 Options[J]={\[Lambda]->0,\[Kappa]->0};
-J[q_,OptionsPattern[]] := OptionValue[\[Lambda]] + q^2 + OptionValue[\[Kappa]] q^4;
+J[q_,OptionsPattern[]] := (1/2)(OptionValue[\[Lambda]] + q^2 + OptionValue[\[Kappa]] q^4);
 
 
 (* This Fourier Transform is fine. *)
@@ -45,7 +46,7 @@ StiffnessActivity[\[CapitalDelta]s_,k_:1,opts:OptionsPattern[]] := Module[{tmp,v
 		FourierParameters->{1,-1},
 		Assumptions->assumptions];
 	tmp=FullSimplify[tmp,Assumptions->assumptions]/.k->Abs[k];
-	Return[tmp];
+	Return[4 tmp];
 ];
 
 
@@ -55,12 +56,12 @@ CorrelationTension[\[CapitalDelta]s_,k_:0,n_Integer:0,opts:OptionsPattern[]] := 
 	vars=Select[vars,Head[#]==Symbol&];
 	assumptions=Join[Map[#\[Element]Reals&,vars],Map[#>0&,vars]];
 	tmp=InverseFourierTransform[
-		(q^2-(k/2)^2)^(n+1)/(J[q+k/2,opts]J[q-k/2,opts]), 
+		(q^2-(k/2)^2)^(n+1)/(4 J[q+k/2,opts]J[q-k/2,opts]), 
 		q, \[CapitalDelta]s,
 		FourierParameters->{1,-1},
 		Assumptions->assumptions];
 	tmp=FullSimplify[tmp,Assumptions->assumptions]/.k->Abs[k];
-	Return[tmp];
+	Return[-tmp];
 ];
 
 

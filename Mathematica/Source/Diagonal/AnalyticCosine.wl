@@ -17,7 +17,7 @@ Needs["KernelTension`"->None,"KernelTension.wl"]
 Options[Generator]={\[Lambda]->0,\[Kappa]->0,"ActivityMagnitude"->0,"TensionMagnitude"->0,"WaveMode"->1};
 Generator[funActivity_,funTension_,x_,y_,opts:OptionsPattern[]] := With[{\[Lambda]val=OptionValue[\[Lambda]],\[Kappa]val=OptionValue[\[Kappa]],\[CapitalTau]=OptionValue["ActivityMagnitude"],\[CapitalSigma]=OptionValue["TensionMagnitude"],k=OptionValue["WaveMode"]},
 	\[CapitalDelta]s=Abs[x-y]; S=x+y;
-	funActivity[\[CapitalDelta]s,0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val] + \[CapitalTau] Cos[k S/2] funActivity[\[CapitalDelta]s,k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val] - \[CapitalSigma]/2 Cos[k S/2] funTension[\[CapitalDelta]s,k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]
+	funActivity[\[CapitalDelta]s,0,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val] + \[CapitalTau] Cos[k S/2] funActivity[\[CapitalDelta]s,k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val] + \[CapitalSigma] Cos[k S/2] funTension[\[CapitalDelta]s,k,\[Lambda]->\[Lambda]val,\[Kappa]->\[Kappa]val]
 ];
 
 
