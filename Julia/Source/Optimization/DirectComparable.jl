@@ -91,9 +91,10 @@ function setup_direct_system(name, reference; overwrite=false)
     elseif jacmodule==Jacobian.Standard
         jacobian_type="standard"
     end
-    
+        
     # check if file exists and decide what to do
-    if (["data/", name, "_", jacobian_type, "_n=", n , ".hdf5"] |> join |> isfile) && overwrite==false
+    filename = ["data/", name, "_", jacobian_type, "_n=", n , ".hdf5"] |> join
+    if (filename |> isfile) && overwrite==false
         return
     end
     
@@ -102,7 +103,7 @@ function setup_direct_system(name, reference; overwrite=false)
     # get rhs vector v in linear equation
     vec = coupling_vector(ΔR, parameters.minimizer, jacmodule=jacmodule, n=n);
         
-    file = h5open(["data/", name, "_", jacobian_type, "_n=", n , ".hdf5"] |> join, "w")
+    file = h5open(filename, "w")
     create_group(file, "optimization")
     file["optimization/matrix"]=Matrix(mat)
     file["optimization/vector"]=Vector(vec)
