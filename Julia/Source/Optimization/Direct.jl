@@ -19,15 +19,15 @@ coupling_matrix(N, parameters; kwargs...)
 
 Determine elements of the coupling matrix, which determines the gradient of the [proposed mean squared separation matrix] squared, with respect to localized changes in activity.
 """
-function coupling_matrix(N, parameters; kwargs...)
+function coupling_matrix(N, J)
     mat = SharedMatrix{Float64}(N,N);
     @showprogress @distributed for i in 0:N-1
         for j in 0:min(i, N-1-i)
             # calculate matrix elements
             tmp1 = Model.numeric_dense(
-                CorrelationMatrices.diagonal_delta(1+i, N), parameters[2:end]...; kwargs...);
+                CorrelationMatrices.diagonal_delta(1+i, N), J);
             tmp2 = Model.numeric_dense(
-                CorrelationMatrices.diagonal_delta(1+j, N), parameters[2:end]...; kwargs...);
+                CorrelationMatrices.diagonal_delta(1+j, N), J);
             val = mean(tmp1 .* tmp2);
 
             # populate matrix and exploit its fourfold symmetry
@@ -47,13 +47,13 @@ coupling_vector!(mat, i, j, parameters; kwargs...)
 
 Determine elements of the coupling vector, which determines the gradient of the [proposed mean squared separation matrix] times the [mean squared separation data], with respect to localized changes in activity.
 """
-function coupling_vector(ΔR, parameters; kwargs...)
+function coupling_vector(ΔR, J)
     N = size(ΔR, 1)
     vec = SharedVector{Float64}(N);
     @showprogress @distributed for i in 0:N-1
         # calculate vector elements
         tmp1 = Model.numeric_dense(
-            CorrelationMatrices.diagonal_delta(1+i, N), parameters[2:end]...; kwargs...);
+            CorrelationMatrices.diagonal_delta(1+i, N), J);
         val = mean(tmp1 .* ΔR);
         
         # populate vector
@@ -84,17 +84,22 @@ function setup_direct_system(name; jacmodule=Jacobian.Discrete, modeltype=Model.
     # Three-parameter fits
     parameters  = Interface.fit_mechanics(
         ΔR, modeltype=modeltype, jacmodule=jacmodule, n=n, padding=padding)
+    jacobian    = jacmodule.J(parameters.minimizer[2:end]..., n)
 
     # get rhs vector v in linear equation
-    vec = coupling_vector(ΔR, parameters.minimizer, jacmodule=jacmodule, n=n);
+    vec = coupling_vector(ΔR, jacobian);
     
     # get lhs matrix M in linear equation. Solution (optimal distribution of activity) is M^-1 * v
-    mat = coupling_matrix(size(ΔR, 1), parameters.minimizer, jacmodule=jacmodule, n=n);
+    mat = coupling_matrix(size(ΔR, 1), jacobian);
+    
+    # get offset
+    offset = mean(ΔR.^2)
     
     file = h5open(["data/", name, "_", jacobian_type, "_n=", n , ".hdf5"] |> join, "w")
     create_group(file, "optimization")
     file["optimization/matrix"]=Matrix(mat)
     file["optimization/vector"]=Vector(vec)
+    file["optimization/offset"]=offset
     close(file)
 end
 

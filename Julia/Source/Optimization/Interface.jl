@@ -41,7 +41,10 @@ function fit_mechanics(ΔR; modeltype=Model.Full, kwargs...)
     return optimize(
         Residual.numeric(ΔR_marginalized; kwargs...), 
         Residual.numeric_grad(ΔR_marginalized; kwargs...),
-        lower, upper, parameters)
+        lower, upper, parameters,
+        LBFGS() |> Fminbox,
+        Optim.Options(show_trace=false)
+    )
 end
 
 function extract_mechanics(ΔR; window=1)

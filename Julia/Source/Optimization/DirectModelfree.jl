@@ -89,10 +89,14 @@ function setup_direct_system(name; overwrite=false, window=2)
     # get lhs matrix M in linear equation. Solution (optimal distribution of activity) is M^-1 * v
     mat = coupling_matrix(J);
     
+    # get offset
+    offset = mean(ΔR.^2)
+    
     file = h5open(["data/", name, "_modelfree", ".hdf5"] |> join, "w")
     create_group(file, "optimization")
     file["optimization/matrix"]=Matrix(mat)
     file["optimization/vector"]=Vector(vec)
+    file["optimization/offset"]=offset
     close(file)
 end
 

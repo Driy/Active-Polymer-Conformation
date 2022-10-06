@@ -42,7 +42,7 @@ Since we are dealing with discrete Fourier transforms, it is tedious to extend t
 julia> activity_to_correlation!(C, J=J₀, fourier_type=FastFourier.DCT);
 ```
 """
-function activity_to_correlation!(matrix::AbstractMatrix; J::Function, fourier_type)
+function activity_to_correlation!(matrix::AbstractMatrix, J::Function; fourier_type)
     for id in CartesianIndices(matrix)
         let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
@@ -70,7 +70,7 @@ Since we are dealing with discrete Fourier transforms, it is tedious to extend t
 julia> activity_to_correlation_grad!(C, J=J₀, fourier_type=FastFourier.DCT);
 ```
 """
-function activity_to_correlation_grad!(matrix::AbstractMatrix; J::Function, dJ_dα::Function, fourier_type)
+function activity_to_correlation_grad!(matrix::AbstractMatrix, J::Function, dJ_dα::Function; fourier_type)
     for id in CartesianIndices(matrix)
         let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
@@ -90,7 +90,7 @@ correlation_to_activity!(matrix::AbstractMatrix; J::Function, fourier_type)
 
 Map the position correlation in Fourier space `matrix` to return the corresponding noise correlation matrix C of the polymer. Specify `fourier_type` to switch between different fourier transforms such as DCT or FFT. Specify `J` to define the Jacobian of the polymer. 
 """
-function correlation_to_activity!(matrix::AbstractMatrix; J::Function, fourier_type)
+function correlation_to_activity!(matrix::AbstractMatrix, J::Function; fourier_type)
     for id in CartesianIndices(matrix)
         let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space

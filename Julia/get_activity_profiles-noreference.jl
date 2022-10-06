@@ -24,5 +24,5 @@ using .ActivePolymer.CorrelationMatrices
 # iterate over all parameters
 for name in ["Deq1", "bcomps_2x", "bcomps_3x", "bcomps_4x", "bcomps_5x", "bcomps_7x", "bcomps_10x", "bcomps_19x", "bcomps_26x", "bcomps_39x"]
     ActivePolymer.Optimization.Direct.setup_direct_system(name, 
-        jacmodule=ActivePolymer.Jacobian.Discrete, modeltype=ActivePolymer.Optimization.Model.Full, n=3, padding=0.85);
+        jacmodule=ActivePolymer.Jacobian.Discrete, modeltype=ActivePolymer.Optimization.Model.Full, n=3, padding=0.85, overwrite=true);
 end
