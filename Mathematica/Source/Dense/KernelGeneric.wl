@@ -8,16 +8,17 @@
 
 BeginPackage["KernelGeneric`"]
 
-CorrelationActivity::usage = "CorrelationActivity[\[CapitalDelta]s_,k_,n] gives the spectral kernel of order n and frequency k in response to activity modulations."
-CorrelationTension::usage = "CorrelationTension[\[CapitalDelta]s_,k_,n] gives the spectral kernel of order n and frequency k in response to tension modulations."
-StiffnessActivity::usage = "StiffnessActivity[\[CapitalDelta]s_] calculates a matrix of effective Hookean interactions."
+CorrelationActivity::usage = "CorrelationActivity[s1,s2,n] gives the full spectral kernel of order n in response to correlated activity."
+CorrelationTension::usage = "CorrelationTension[s1,s2,n] gives the full spectral kernel of order n and frequency k in response to tension modulations."
+StiffnessActivity::usage = "StiffnessActivity[s1,s2] calculates a matrix of effective Hookean interactions."
 
 Begin["`Private`"]
 
 
 (* Define Jacobian *)
+(* Measured in terms of characteristic activity over characteristic length squared times inverse friction *)
 Options[J]={\[Lambda]->0,\[Kappa]->0};
-J[q_,OptionsPattern[]] := OptionValue[\[Lambda]] + q^2 + OptionValue[\[Kappa]] q^4;
+J[q_,OptionsPattern[]] := (1/2)(OptionValue[\[Lambda]] + q^2 + OptionValue[\[Kappa]] q^4);
 
 
 (* This Fourier Transform is fine. *)
@@ -57,7 +58,7 @@ StiffnessActivity[s1_,s2_,opts:OptionsPattern[]] := Module[{tmp,vars,assumptions
 		Assumptions->assumptions];
 	tmp[3]=(tmp[1]+tmp[2])/2;
 	tmp[3]=FullSimplify[tmp[3],Assumptions->assumptions];
-	Return[tmp[3]];
+	Return[4 tmp[3]];
 ];
 
 
@@ -78,7 +79,7 @@ CorrelationTension[s1_,s2_,n_Integer:0,opts:OptionsPattern[]] := Module[{tmp,var
 		Assumptions->assumptions];
 	tmp[3]=(tmp[1]+tmp[2])/2;
 	tmp[3]=FullSimplify[tmp[3],Assumptions->assumptions];
-	Return[tmp[3]];
+	Return[-tmp[3]];
 ];
 
 

@@ -2,8 +2,8 @@
 
 BeginPackage["Green`"]
 
-SquaredSeparationNum::usage = "SquaredSeparationNum[x,y] determines the squared separation between the positions of two points x and y.";
-TangentCorrelationNum::usage = "TangentCorrelationNum[x,y] determines the correlation function between the tangent vectors at two points x and y.";
+SquaredSeparationNum::usage = "SquaredSeparationNum[s1,s2] determines the squared separation between the positions of two points x and y.";
+TangentCorrelationNum::usage = "TangentCorrelationNum[s1,s2] determines the correlation function between the tangent vectors at two points x and y.";
 
 Begin["`Private`"]
 
@@ -28,26 +28,24 @@ End[]
 Options[SquaredSeparationNum]={"ActivityProfile"->(1&),"TensionProfile"->(0&)};
 SquaredSeparationNum[s1_,s2_,OptionsPattern[]] := With[{ActFun=OptionValue["ActivityProfile"], TenFun=OptionValue["TensionProfile"]},
 NIntegrate[
-	N[ActFun[x]Green`Private`Kernel`SeparationActivity[s1-x,s2-x] + TenFun[x]Green`Private`Kernel`SeparationTension[s1-x,s2-x],$MachinePrecision],
+	N[ActFun[x]Green`Private`Kernel`SeparationActivity[s1-x,s2-x] + TenFun[x]Green`Private`Kernel`SeparationTension[s1-x,s2-x], $MachinePrecision],
 	{x,-Infinity,Infinity},
 	Method->"GlobalAdaptive",
 	WorkingPrecision->8,
 	AccuracyGoal->8,
-	MinRecursion->8,
-	Exclusions->{s1,s2}
+	MinRecursion->8
 ]];
 
 
 Options[TangentCorrelationNum]={"ActivityProfile"->(1&)};
 TangentCorrelationNum[s1_,s2_,OptionsPattern[]] := With[{ActFun=OptionValue["ActivityProfile"]},
 NIntegrate[
-	N[ActFun[x]Green`Private`Kernel`TangentCorrelationActivity[s1-x,s2-x],$MachinePrecision],
+	N[ActFun[x]Green`Private`Kernel`TangentCorrelationActivity[s1-x,s2-x], $MachinePrecision],
 	{x,-Infinity,Infinity},
 	Method->"GlobalAdaptive",
 	WorkingPrecision->8,
 	AccuracyGoal->8,
-	MinRecursion->8,
-	Exclusions->{s1,s2}
+	MinRecursion->8
 ]];
 
 

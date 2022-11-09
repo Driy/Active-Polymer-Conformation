@@ -2,12 +2,12 @@
 
 BeginPackage["KernelActivity`"]
 
-PositionCorrelationActivity::usage = "PositionCorrelationActivity[\[CapitalDelta]s_,k_] gives the spectral kernel of order 0 and frequency k in response to activity modulations."
-PositionCorrelationActivityC::usage = "PositionCorrelationActivityC[\[CapitalDelta]s_,k_] gives the spectral kernel of order 0 and frequency k in response to activity modulations. Compiled function."
-TangentCorrelationActivity::usage = "TangentCorrelationActivity[\[CapitalDelta]s_,k_] gives the spectral kernel of order 1 and frequency k in response to activity modulations."
-TangentCorrelationActivityC::usage = "TangentCorrelationActivityC[\[CapitalDelta]s_,k_] gives the spectral kernel of order 1 and frequency k in response to activity modulations. Compiled function."
-CurvatureCorrelationActivity::usage = "CurvatureCorrelationActivity[\[CapitalDelta]s_,k_] gives the spectral kernel of order 2 and frequency k in response to activity modulations."
-CurvatureCorrelationActivityC::usage = "CurvatureCorrelationActivityC[\[CapitalDelta]s_,k_] gives the spectral kernel of order 2 and frequency k in response to activity modulations. Compiled function."
+PositionCorrelationActivity::usage = "PositionCorrelationActivity[\[CapitalDelta]s,k] gives the spectral kernel of order 0 and frequency k in response to activity modulations."
+PositionCorrelationActivityC::usage = "PositionCorrelationActivityC[\[CapitalDelta]s,k] gives the spectral kernel of order 0 and frequency k in response to activity modulations. Compiled function."
+TangentCorrelationActivity::usage = "TangentCorrelationActivity[\[CapitalDelta]s,k] gives the spectral kernel of order 1 and frequency k in response to activity modulations."
+TangentCorrelationActivityC::usage = "TangentCorrelationActivityC[\[CapitalDelta]s,k] gives the spectral kernel of order 1 and frequency k in response to activity modulations. Compiled function."
+CurvatureCorrelationActivity::usage = "CurvatureCorrelationActivity[\[CapitalDelta]s,k] gives the spectral kernel of order 2 and frequency k in response to activity modulations."
+CurvatureCorrelationActivityC::usage = "CurvatureCorrelationActivityC[\[CapitalDelta]s,k] gives the spectral kernel of order 2 and frequency k in response to activity modulations. Compiled function."
 
 Begin["`Private`"]
 

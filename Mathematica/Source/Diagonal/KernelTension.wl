@@ -2,12 +2,12 @@
 
 BeginPackage["KernelTension`"]
 
-PositionCorrelationTension::usage = "PositionCorrelationTension[\[CapitalDelta]s_,k_] gives the spectral kernel of order 0 and frequency k in response to tension modulations."
-PositionCorrelationTensionC::usage = "PositionCorrelationTensionC[\[CapitalDelta]s_,k_] gives the spectral kernel of order 0 and frequency k in response to tension modulations. Compiled function."
-TangentCorrelationTension::usage = "TangentCorrelationTension[\[CapitalDelta]s_,k_] gives the spectral kernel of order 1 and frequency k in response to tension modulations."
-TangentCorrelationTensionC::usage = "TangentCorrelationTensionC[\[CapitalDelta]s_,k_] gives the spectral kernel of order 1 and frequency k in response to tension modulations. Compiled function."
-CurvatureCorrelationTension::usage = "CurvatureCorrelationTension[\[CapitalDelta]s_,k_] gives the spectral kernel of order 2 and frequency k in response to tension modulations."
-CurvatureCorrelationTensionC::usage = "CurvatureCorrelationTensionC[\[CapitalDelta]s_,k_] gives the spectral kernel of order 2 and frequency k in response to tension modulations. Compiled function."
+PositionCorrelationTension::usage = "PositionCorrelationTension[\[CapitalDelta]s,k] gives the spectral kernel of order 0 and frequency k in response to tension modulations."
+PositionCorrelationTensionC::usage = "PositionCorrelationTensionC[\[CapitalDelta]s,k] gives the spectral kernel of order 0 and frequency k in response to tension modulations. Compiled function."
+TangentCorrelationTension::usage = "TangentCorrelationTension[\[CapitalDelta]s,k] gives the spectral kernel of order 1 and frequency k in response to tension modulations."
+TangentCorrelationTensionC::usage = "TangentCorrelationTensionC[\[CapitalDelta]s,k] gives the spectral kernel of order 1 and frequency k in response to tension modulations. Compiled function."
+CurvatureCorrelationTension::usage = "CurvatureCorrelationTension[\[CapitalDelta]s,k] gives the spectral kernel of order 2 and frequency k in response to tension modulations."
+CurvatureCorrelationTensionC::usage = "CurvatureCorrelationTensionC[\[CapitalDelta]s,k] gives the spectral kernel of order 2 and frequency k in response to tension modulations. Compiled function."
 
 Begin["`Private`"]
 
