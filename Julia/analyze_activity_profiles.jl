@@ -12,6 +12,7 @@ using OffsetArrays
 using SparseArrays
 using StaticArrays
 using SharedArrays
+using LineSearches
 using LinearAlgebra
 using ProgressMeter
 using BenchmarkTools
@@ -19,7 +20,7 @@ using DelimitedFiles
 using ImageFiltering
 
 #
-cmasher = pyimport("cmasher")
+cmasher = pyimport_conda("cmasher", "cmasher")
 
 # include custom code
 include("./Test/runtests.jl")
@@ -68,7 +69,7 @@ export_activity = DataFrame();
 data_groundtruth = npzread("data/ABidentities_blobel2021_chr2_35Mb_60Mb.npy")
 mask = Vector{Bool}(data_groundtruth)
 
-for i in 1:10
+@showprogress for i in 1:10
     name = names[i]
     file = h5open(["data/", name, "_discrete_n=3", ".hdf5"] |> join, "r")
     mat  = read(file["optimization/matrix"])
@@ -77,24 +78,25 @@ for i in 1:10
     close(file)
     
     # define loss and gradient
-    function loss(activity)
+    # the idea is to solve for the square root of the activity to force the activity to be positive
+    function loss(activity_sqrt)
+        activity = activity_sqrt.^2
         transpose(activity) * mat * activity - 2*transpose(vec) * activity + offset
     end
 
-    function loss_grad!(G, activity)
-        G .= mat * activity .- vec
+    function loss_grad!(G, activity_sqrt)
+        activity = activity_sqrt.^2
+        G .= 2(mat * activity .- vec) .* 2activity_sqrt
     end
     
     N = size(mat,1)
-    start    = fill(0.001, N)
-    lower    = fill(0.0, N)
-    upper    = fill(Inf, N)
-
-    result   = optimize(loss, loss_grad!, lower, upper, start, LBFGS() |> Fminbox,
-            Optim.Options(show_trace=false)
+    start    = fill(1.0, N)
+    result   = optimize(loss, loss_grad!, start, ConjugateGradient(),
+            Optim.Options(show_trace=false, iterations=10000)
     )
     
-    activity = result.minimizer / mean(result.minimizer);
+    # get normalized activity profile
+    activity = result.minimizer.^2 / mean(result.minimizer.^2);
     
     append!(amplitudes, 
         2( mean(activity[mask]) - mean(activity[.!mask]) ) / ( mean(activity[mask]) + mean(activity[.!mask]) )
@@ -112,8 +114,7 @@ for i in 1:10
     ylim(bottom=1,top=100);
     axis("off");
     tight_layout();
-    savefig([folder, "/inferred_activity-", analysis_type, "-", name, ".png"] |> join,
-        tight_layout=true, bbox_inches="tight", pad_inches=0, dpi=600);
+    savefig([folder, "/inferred_activity-", analysis_type, "-", name, ".png"] |> join, bbox_inches="tight", pad_inches=0, dpi=600);
     
     # print mean squared separation map of original data
     R, ΔR = ActivePolymer.Optimization.Interface.load_data(name);
@@ -122,18 +123,16 @@ for i in 1:10
     ylim(bottom=1,top=1000);
     axis("off");
     tight_layout();
-    savefig([folder, "/inferred_activity-", analysis_type, "-original_separation-", name, ".png"] |> join,
-        tight_layout=true, bbox_inches="tight", pad_inches=0, dpi=300);
+    savefig([folder, "/inferred_activity-", analysis_type, "-original_separation-", name, ".png"] |> join, bbox_inches="tight", pad_inches=0, dpi=300);
     
     # print predicted mean squared separation map
-    prediction = ActivePolymer.Optimization.Model.numeric_dense(result.minimizer, jacobian)
+    prediction = ActivePolymer.Optimization.Model.numeric_dense(result.minimizer.^2, jacobian)
     imshow(prediction, cmap=cmasher.ocean, extent=[1,1000,1000,1], clim=[0,maximum(ΔR)]);
     xlim(left=1,right=1000);
     ylim(bottom=1,top=1000);
     axis("off");
     tight_layout();
-    savefig([folder, "/inferred_activity-", analysis_type, "-predicted_separation-", name, ".png"] |> join,
-        tight_layout=true, bbox_inches="tight", pad_inches=0, dpi=300);
+    savefig([folder, "/inferred_activity-", analysis_type, "-predicted_separation-", name, ".png"] |> join, bbox_inches="tight", pad_inches=0, dpi=300);
 end
 
 data = DataFrame(ratio = values, delta = mappedvalues, deltaA = amplitudes, ratioA = ratios);
@@ -144,8 +143,7 @@ xlim(left=1,right=1000)
 ylim(bottom=1,top=100)
 axis("off")
 tight_layout()
-savefig([folder, "/ground_truth.png"] |> join,
-    tight_layout=true, bbox_inches="tight", pad_inches=0, dpi=600)
+savefig([folder, "/ground_truth.png"] |> join, bbox_inches="tight", pad_inches=0, dpi=600)
 
 export_activity[!, "position"] = Vector((1:size(export_activity,1)));
 export_activity[!, "ground_truth"] = data_groundtruth;

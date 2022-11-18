@@ -4,6 +4,7 @@ module Standard
 J₀(q)
 
 Define Jacobian for a Rouse chain, where `q` is the wave mode. Consider only line tension in Fourier space.
+Measured in terms of characteristic activity over characteristic length squared times inverse friction.
 
 ## Example
 ```julia-repl
@@ -19,6 +20,7 @@ end
 J(q; α=0, κ=0, n=4)
 
 Define Jacobian for a Rouse chain, where `q` is the wave mode. Consider only line tension in Fourier space.
+Measured in terms of characteristic activity over characteristic length squared times inverse friction.
 
 ## Example
 ```julia-repl
@@ -36,6 +38,7 @@ end
 dJ_dα(q; α=0, κ=0, n=4)
 
 Define Jacobian for a Rouse chain, where `q` is the wave mode. Consider only line tension in Fourier space.
+Measured in terms of characteristic activity over characteristic length squared times inverse friction.
 
 ## Example
 ```julia-repl
@@ -53,6 +56,7 @@ end
 dJ_dκ(q; α=0, κ=0, n=4)
 
 Define Jacobian for a Rouse chain, where `q` is the wave mode. Consider only line tension in Fourier space.
+Measured in terms of characteristic activity over characteristic length squared times inverse friction.
 
 ## Example
 ```julia-repl
