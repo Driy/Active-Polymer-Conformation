@@ -72,7 +72,7 @@ get_frequency(fourier_type, matrix::AbstractMatrix)
 Retrieve all Fourier modes for Transform with type `fourier_type`, of the `matrix::AbstractMatrix`.
 """
 function frequency(matrix::AbstractMatrix; fourier_type)
-    return map(I -> frequency(fourier_type, I, matrix), CartesianIndices(matrix))
+    return map(I -> frequency(I, matrix, fourier_type=fourier_type), CartesianIndices(matrix))
 end
 
 """
