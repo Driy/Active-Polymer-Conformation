@@ -41,7 +41,7 @@ function compute_mean_squared_traveled_distance(matrix_activity::AbstractMatrix,
     # transform to real space
     FastFourier.backward!(tmp, fourier_type = fourier_type);
     # return mean square separation
-    return 2tmp |> diag;
+    return tmp |> diag;
 end
 
 """

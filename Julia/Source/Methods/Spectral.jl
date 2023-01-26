@@ -68,17 +68,49 @@ Since we are dealing with discrete Fourier transforms, it is tedious to extend t
 julia> activity_to_correlation!(C, J=J₀, fourier_type=FastFourier.DCT);
 ```
 """
-function activity_to_correlation!(matrix::AbstractMatrix, J::Function, τ::Real; fourier_type)
+function activity_to_correlation!(matrix::AbstractMatrix, J::Function, δ::Real; fourier_type)
     for id in CartesianIndices(matrix)
         let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
-            matrix[id] *= 1 - exp( -τ*J(q) )
+            matrix[id] *= 2 - exp( -δ*J(q) ) - exp( -δ*J(k) )
             matrix[id] /= J(q) + J(k);
         end
     end
     # Take the proper limit for J(k)->0, J(q)->0!
     if !isfinite(matrix[begin,begin])
-        matrix[begin,begin] = τ;
+        matrix[begin,begin] = δ;
+    end
+end
+
+"""
+activity_to_correlation!(matrix::AbstractMatrix; J::Function, τ::Real, fourier_type)
+
+Map the noise correlation matrix `matrix` in Fourier space to a correlation matrix between different Rouse modes at the same time, for a polymer with diagonal Jacobian `J::Function`. Specify `fourier_type` to switch between different fourier transforms such as DCT or FFT.
+
+## Example
+```julia-repl
+julia> activity_to_correlation!(C, J=J₀, fourier_type=FastFourier.DCT);
+```
+"""
+function activity_to_correlation!(matrix::AbstractMatrix, J::Function, δ::Real, τ::Real; fourier_type)
+    for id in CartesianIndices(matrix)
+        let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
+            # manipulate as needed in Fourier space
+            if τ >= δ
+                matrix[id] *= 2exp( -τ*J(q) ) - exp( -(τ+δ)*J(q) ) - exp( -(τ-δ)*J(q) )
+            else
+                matrix[id] *= 2exp( -τ*J(q) ) - exp( -(τ+δ)*J(q) ) - exp( -(δ-τ)*J(k) )
+            end
+            matrix[id] /= J(q) + J(k);
+        end
+    end
+    # Take the proper limit for J(k)->0, J(q)->0!
+    if !isfinite(matrix[begin,begin])
+        if τ >= δ
+            matrix[begin,begin] = 0
+        else
+            matrix[begin,begin] = δ-τ
+        end
     end
 end
 
