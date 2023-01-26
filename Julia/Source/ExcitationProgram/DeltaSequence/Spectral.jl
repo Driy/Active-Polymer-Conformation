@@ -53,4 +53,33 @@ function delayed_correlation(Δt, delay_sequence, excitation_sequence, J::Functi
     return matrix
 end
 
+"""
+activity_to_correlation!(matrix::AbstractMatrix; J::Function, τ::Real, fourier_type)
+
+This method is used to calculate the pairwise velocity correlation between different points, with lag time τ and measurement window δ. Needs to be divided by δ^2 in the end.
+
+Map the noise correlation matrix `matrix` in Fourier space to a correlation matrix between different Rouse modes at the same time, for a polymer with diagonal Jacobian `J::Function`. Specify `fourier_type` to switch between different fourier transforms such as DCT or FFT.
+
+## Example
+```julia-repl
+julia> activity_to_correlation!(C, J=J₀, fourier_type=FastFourier.DCT);
+```
+"""
+function apply_correlation_correction!(matrix::AbstractMatrix, delay_sequence, excitation_sequence, J::Function, δ::Real, τ::Real; fourier_type)
+    B₀ = delayed_correlation(τ, delay_sequence, excitation_sequence, J; fourier_type = fourier_type)
+    B₊ = delayed_correlation(τ+δ, delay_sequence, excitation_sequence, J; fourier_type = fourier_type)
+    B₋ = delayed_correlation(abs(δ-τ), delay_sequence, excitation_sequence, J; fourier_type = fourier_type)
+    
+    for id in CartesianIndices(matrix)
+        let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
+            # manipulate as needed in Fourier space
+            if τ >= δ
+                matrix[id] += 2exp( -τ*J(q) ) * B₀[id] - exp( -(τ+δ)*J(q) ) * B₊[id] - exp( -(τ-δ)*J(q) ) * B₋[id]
+            else
+                matrix[id] += 2exp( -τ*J(q) ) * B₀[id] - exp( -(τ+δ)*J(q) ) * B₊[id] - exp( -(δ-τ)*J(k) ) * B₋'[id]
+            end
+        end
+    end
+end
+
 end

@@ -29,4 +29,12 @@ include("./Optimization/DirectModelfree.jl")
 include("./Optimization/DirectComparable.jl")
 end
 
+module ExcitationProgram
+module DeltaSequence
+include("./ExcitationProgram/DeltaSequence/Analytic.jl")
+include("./ExcitationProgram/DeltaSequence/Spectral.jl")
+include("./ExcitationProgram/DeltaSequence/Real.jl")
+end
+end
+
 end
