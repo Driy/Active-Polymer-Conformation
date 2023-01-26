@@ -10,7 +10,7 @@ function effective_correlation(delay_sequence, excitation_sequence, J::Function;
     matrix = zeros(excitation_sequence[begin] |> size)
     
     # iterate over all excitations
-    for α, C in delay_sequence, excitation_sequence
+    for (α, C) in zip(delay_sequence, excitation_sequence)
         # iterate over all matrix elements
         for id in CartesianIndices(matrix)
             let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
@@ -33,7 +33,7 @@ function delayed_correlation(Δt, delay_sequence, excitation_sequence, J::Functi
     matrix = zeros(excitation_sequence[begin] |> size)
     
     # iterate over all excitations
-    for α, C in delay_sequence, excitation_sequence
+    for (α, C) in zip(delay_sequence, excitation_sequence)
         # iterate over all matrix elements
         for id in CartesianIndices(matrix)
             let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)

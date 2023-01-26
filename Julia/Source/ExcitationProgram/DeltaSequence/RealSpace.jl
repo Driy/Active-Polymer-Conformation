@@ -1,4 +1,4 @@
-module Real
+module RealSpace
 
 using LinearAlgebra
 
@@ -13,8 +13,7 @@ compute_pairwise_velocity_correlation(matrix_activity::AbstractMatrix; J::Functi
 Calculate the mean squared traveled distance after the time τ, for all loci along a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.
 Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
 """
-function compute_pairwise_velocity_correlation(delay_sequence, excitation_sequence, J::Function, δ::Real, τ::Real;
-        fourier_type = FastFourier.DCT)
+function compute_pairwise_velocity_correlation(delay_sequence, excitation_sequence, J::Function, δ::Real, τ::Real; fourier_type = FastFourier.DCT)
     # transform to Fourier space; always dense!
     excitation_sequence_fourier = [FastFourier.forward(matrix_activity, fourier_type = fourier_type) 
         for matrix_activity in excitation_sequence];

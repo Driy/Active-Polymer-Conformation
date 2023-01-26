@@ -33,7 +33,7 @@ module ExcitationProgram
 module DeltaSequence
 include("./ExcitationProgram/DeltaSequence/Analytic.jl")
 include("./ExcitationProgram/DeltaSequence/Spectral.jl")
-include("./ExcitationProgram/DeltaSequence/Real.jl")
+include("./ExcitationProgram/DeltaSequence/RealSpace.jl")
 end
 end
 
