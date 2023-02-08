@@ -13,8 +13,4 @@ This allows us to exploit several simplifications, by transforming to Fourier sp
 
 This code accompanies the following publication:
 
-Polymer folding through active processes recreates features of genome organization
-
-Andriy Goychuk<sup>\*</sup>, Deepti Kannan<sup>\*</sup>, Arup K. Chakrabory<sup>+</sup>, and Mehran Kardar<sup>+</sup>
-
-[bioRxiv (2022)](https://doi.org/10.1101/2022.12.24.521789)
+**Polymer folding through active processes recreates features of genome organization**, Andriy Goychuk<sup>\*</sup>, Deepti Kannan<sup>\*</sup>, Arup K. Chakrabory<sup>+</sup>, and Mehran Kardar<sup>+</sup>, [bioRxiv (2022)](https://doi.org/10.1101/2022.12.24.521789)
