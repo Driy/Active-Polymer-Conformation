@@ -1,5 +1,7 @@
 module Spectral
 
+using ....Methods.FastFourier
+
 """
 Takes the delay sequence and the excitation sequence in Fourier space, and gives the effective resulting correlation (that is, effective correlations between instantaneous excitations that would yield the same correlation between Rouse modes).
 """

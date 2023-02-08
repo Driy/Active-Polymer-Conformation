@@ -8,6 +8,26 @@ using ....Methods
 using ....Methods.FastFourier
 
 """
+compute_effective_correlation(delay_sequence, excitation_sequence, J::Function; fourier_type = FastFourier.DCT)
+
+Calculate the effective correlation map that would give the same conformation.
+Use the argument `fourier_type` to specialize this function to specific transforms, such as the Discrete Cosine Transform or the Fast Fourier Transform.
+"""
+function compute_effective_correlation(delay_sequence, excitation_sequence, J::Function; fourier_type = FastFourier.DCT)
+    # transform to Fourier space; always dense!
+    excitation_sequence_fourier = [FastFourier.forward(matrix_activity, fourier_type = fourier_type) 
+        for matrix_activity in excitation_sequence];
+    
+    # get effective excitation matrix
+    tmp = Spectral.effective_correlation(delay_sequence, excitation_sequence_fourier, J; fourier_type = fourier_type)
+    
+    # transform to real space
+    FastFourier.backward!(tmp, fourier_type = fourier_type);
+    # return mean square separation
+    return tmp;
+end
+
+"""
 compute_conformation(delay_sequence, excitation_sequence, J::Function; fourier_type = FastFourier.DCT)
 
 Calculate the mean square separation of a polymer with given correlation matrix `matrix_activity` and Jacobian `J`.

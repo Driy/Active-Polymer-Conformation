@@ -6,7 +6,7 @@ gaussian_kernel(Δs, w)
 Corresponds to a Gaussian distribution (here of active processes) with a characteristic width.
 """
 @. function gaussian_kernel(Δs, w)
-    return sqrt(π*w^2) * exp( -(Δs/w)^2 )
+    return (π*w^2)^(-0.5) * exp( -(Δs/w)^2 )
 end
 
 """
