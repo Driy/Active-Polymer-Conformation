@@ -21,7 +21,7 @@ include("./Source/ActivePolymer.jl")
 using .ActivePolymer
 using .ActivePolymer.CorrelationMatrices
 
-profile = npzread("data/ABidentities_blobel2021_chr2_35Mb_60Mb.npy") .==1
+profile = npzread("../Share/ABidentities_blobel2021_chr2_35Mb_60Mb.npy") .==1
 
 ratio   = 5.974;
 diff    = (ratio - 1)/(ratio+1);

@@ -1,4 +1,14 @@
-
+.gitignore
 .DS_Store
 *checkpoint.ipynb
 *.ipynb_checkpoints/
+Share/
+Julia/testing/
+Julia/data/
+Julia/mechanics_fit/
+Julia/output_optimization/
+Julia/discrete_diffusion_msd.csv
+Mathematica/Cache/
+Mathematica/colormaps/
+Mathematica/Notebooks.v*/
+Paper_Figures/

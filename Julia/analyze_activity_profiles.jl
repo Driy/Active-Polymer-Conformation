@@ -66,7 +66,7 @@ amplitudes = []
 ratios     = []
 
 export_activity = DataFrame();
-data_groundtruth = npzread("data/ABidentities_blobel2021_chr2_35Mb_60Mb.npy")
+data_groundtruth = npzread("../Share/ABidentities_blobel2021_chr2_35Mb_60Mb.npy")
 mask = Vector{Bool}(data_groundtruth)
 
 @showprogress for i in 1:10
