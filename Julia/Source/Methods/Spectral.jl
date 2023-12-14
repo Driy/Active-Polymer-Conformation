@@ -20,13 +20,12 @@ function activity_to_correlation!(matrix::AbstractMatrix, J::AbstractVector; fou
     for id in CartesianIndices(matrix)
         let (q,k) = id.I
             # manipulate as needed in Fourier space
-            matrix[id] /= J[q] + J[k];
+            local val = 1.0/(J[q] + J[k])
+            # Make sure that the homogeneous mode is not NaN! 
+            # It is irrelevant for the mean square separation anyways.
+            if !isfinite(val) val = 0 end
+            matrix[id] *= val;
         end
-    end
-    # Make sure that the homogeneous mode is not NaN! 
-    # It is irrelevant for the mean square separation anyways.
-    if !isfinite(matrix[begin,begin])
-        matrix[begin,begin] = 0;
     end
 end
 
@@ -46,13 +45,12 @@ function activity_to_correlation!(matrix::AbstractMatrix, J::Function; fourier_t
     for id in CartesianIndices(matrix)
         let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
-            matrix[id] /= J(q) + J(k);
+            local val = 1.0/(J(q) + J(k))
+            # Make sure that the homogeneous mode is not NaN! 
+            # It is irrelevant for the mean square separation anyways.
+            if !isfinite(val) val = 0 end
+            matrix[id] *= val;
         end
-    end
-    # Make sure that the homogeneous mode is not NaN! 
-    # It is irrelevant for the mean square separation anyways.
-    if !isfinite(matrix[begin,begin])
-        matrix[begin,begin] = 0;
     end
 end
 
@@ -70,13 +68,12 @@ function activity_to_correlation!(matrix::AbstractMatrix, J::Function, δ::Real;
     for id in CartesianIndices(matrix)
         let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
-            matrix[id] *= 2 - exp( -δ*J(q) ) - exp( -δ*J(k) )
-            matrix[id] /= J(q) + J(k);
+            local val = 2 - exp( -δ*J(q) ) - exp( -δ*J(k) );
+            local val /= J(q) + J(k);
+            # Take the proper limit for J(k)->0, J(q)->0!
+            if !isfinite(val) val = δ end
+            matrix[id] *= val;
         end
-    end
-    # Take the proper limit for J(k)->0, J(q)->0!
-    if !isfinite(matrix[begin,begin])
-        matrix[begin,begin] = δ;
     end
 end
 
@@ -97,19 +94,17 @@ function activity_to_correlation!(matrix::AbstractMatrix, J::Function, δ::Real,
         let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
             if τ >= δ
-                matrix[id] *= 2exp( -τ*J(q) ) - exp( -(τ+δ)*J(q) ) - exp( -(τ-δ)*J(q) )
+                local val = 2exp( -τ*J(q) ) - exp( -(τ+δ)*J(q) ) - exp( -(τ-δ)*J(q) )
+                local val /= J(q) + J(k);
+                # Take the proper limit for J(k)->0, J(q)->0!
+                if !isfinite(val) val = 0 end
             else
-                matrix[id] *= 2exp( -τ*J(q) ) - exp( -(τ+δ)*J(q) ) - exp( -(δ-τ)*J(k) )
+                local val = 2exp( -τ*J(q) ) - exp( -(τ+δ)*J(q) ) - exp( -(δ-τ)*J(k) )
+                local val /= J(q) + J(k);
+                # Take the proper limit for J(k)->0, J(q)->0!
+                if !isfinite(val) val = δ-τ end
             end
-            matrix[id] /= J(q) + J(k);
-        end
-    end
-    # Take the proper limit for J(k)->0, J(q)->0!
-    if !isfinite(matrix[begin,begin])
-        if τ >= δ
-            matrix[begin,begin] = 0
-        else
-            matrix[begin,begin] = δ-τ
+            matrix[id] *= val;
         end
     end
 end
@@ -130,14 +125,12 @@ function activity_to_correlation!(matrix::AbstractMatrix, J::Function, dJ_dα::F
     for id in CartesianIndices(matrix)
         let (q,k) = FastFourier.frequency(id, matrix, fourier_type = fourier_type)
             # manipulate as needed in Fourier space
-            matrix[id] /= (J(q) + J(k))^2;
-            matrix[id] *= -(dJ_dα(q) + dJ_dα(k));
+            local val = -(dJ_dα(q) + dJ_dα(k));
+            local val /= (J(q) + J(k))^2;
+            #
+            if !isfinite(val) val = 0 end
+            matrix[id] *= val
         end
-    end
-    # Make sure that the homogeneous mode is not NaN! 
-    # It is irrelevant for the mean square separation anyways.
-    if !isfinite(matrix[begin,begin])
-        matrix[begin,begin] = 0;
     end
 end
 

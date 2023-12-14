@@ -11,6 +11,8 @@ Then, for any given polymer configuration, one can extract an apparent exctitati
 We here consider discrete polymers whose response matrix, in Fourier space, is diagonal.
 This allows us to exploit several simplifications, by transforming to Fourier space and back.
 
-This code accompanies the following publication:
+This code accompanies the following preprint and publication:
 
 **Polymer folding through active processes recreates features of genome organization**, Andriy Goychuk\*, Deepti Kannan\*, Arup K. Chakrabory<sup>+</sup>, and Mehran Kardar<sup>+</sup>, [bioRxiv (2022)](https://doi.org/10.1101/2022.12.24.521789)
+
+**Polymer folding through active processes recreates features of genome organization**, Andriy Goychuk\*, Deepti Kannan\*, Arup K. Chakrabory<sup>+</sup>, and Mehran Kardar<sup>+</sup>, PNAS (2023)
